@@ -1,8 +1,8 @@
 open List
 type color = Blancs | Noirs
-type pieces = Pion | Tour | Cavalier | Fou | Dame | Roi
+type ptype = Pion | Tour | Cavalier | Fou | Dame | Roi
 
-type piece = {c : color; p : pieces}
+type piece = color * ptype
 
              
 let to_algebrique (x,y) = 
@@ -47,9 +47,9 @@ let mouv_roi (x,y) =
 let mouv_pion = Fun.id
 
 
-let get_mouvement p =
+let get_mouvement (_,t) =
   Fun.compose (filter sur_echiquier) @@
-  match p.p with 
+  match  t with 
   | Roi -> mouv_roi
   | Cavalier -> mouv_cav
   | Tour -> mouv_tour

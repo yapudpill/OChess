@@ -8,29 +8,30 @@ type case = Vide | Piece of piece
 type echiquier = case array array
 
 
-let init_pos y x : case = 
+let init_pos x y : case = 
+
   let col c = function
-  | 1 | 8 -> Piece {c; p = Tour}
-  | 2 | 7 -> Piece {c; p = Cavalier}
-  | 3 | 6 -> Piece {c; p = Fou}
-  | 4 -> Piece {c; p = Dame}
-  | 5 -> Piece {c; p = Roi}
+  | 1 | 8 -> Piece (c,Tour)
+  | 2 | 7 -> Piece (c,Cavalier)
+  | 3 | 6 -> Piece (c,Fou)
+  | 4 -> Piece (c,Dame)
+  | 5 -> Piece (c,Roi)
   | _ -> failwith "init"
   in
 
   if 1<y && y<6 then Vide 
-  else if y = 1 then Piece {c = Blancs; p = Pion}
-  else if y = 6 then Piece {c = Noirs; p = Pion}
-  else if y = 0 then col Blancs (x+1) 
-  else col Noirs (x +1)
+  else if y = 1 then Piece (Noirs, Pion)
+  else if y = 6 then Piece (Blancs, Pion)
+  else if y = 0 then col Noirs (x+1) 
+  else col Blancs (x +1)
 
 let inititialisation () =
   Array.init_matrix 8 8 init_pos
 
-let diff_color e x y p = 
+let diff_color e x y (c,_) = 
   match e.(x).(y) with
   | Vide -> true
-  | Piece {c;_}-> p.c <> c
+  | Piece (c',_)-> c' <> c
 
 let deplacer_piece e (x,y) (x',y') = 
   match e.(x).(y) with 
@@ -40,7 +41,7 @@ let deplacer_piece e (x,y) (x',y') =
       then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
       else raise ILLEGAL_MOOVE
 
-let print_piece {c;p} =
+let print_piece (c,p) =
   match c, p  with 
   | Blancs , Roi -> print_string "\u{2654}"
   | Blancs , Dame -> print_string "\u{2655}"
@@ -55,20 +56,15 @@ let print_piece {c;p} =
   | Noirs , Cavalier -> print_string "\u{265E}"
   | Noirs , Pion -> print_string "\u{265F}"
 
- 
-
-
-
-
-(* Afficher l'état de l'échiquier *)
-let afficher_echiquier board =
-  Array.iter (fun ligne ->
-    Array.iter (fun case ->
-      match case with
-      | Vide -> print_string ". "
-      | Piece p -> (print_piece p; print_string " ")
-    ) ligne;
+let afficher_echiquier e = 
+  for l = 7 downto 0 do 
+    for c = 0 to 7 do 
+      match e.(c).(l) with 
+      |Vide -> print_string ". "
+      |Piece p -> (print_piece p; print_string " ")
+    done;
     print_newline ()
-  ) board
+  done
+
 
 
