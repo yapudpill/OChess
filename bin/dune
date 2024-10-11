@@ -1,4 +1,15 @@
 (executable
  (public_name OChess)
  (name main)
- (libraries OChess))
+ (modules main)
+ (libraries OChess echiquier))
+
+(library
+ (name echiquier)
+ (modules echiquier)
+ (libraries test_pieces))
+
+
+(library
+ (name test_pieces)
+ (modules test_pieces))

@@ -1,12 +1,11 @@
 open List
 type color = Blancs | Noirs
-type 'a couple = {x : 'a; y : 'a}
+type pieces = Pion | Tour | Cavalier | Fou | Dame | Roi
 
-type piece = {c : color; mouv : int couple -> int couple list}
+type piece = {c : color; p : pieces}
 
              
-let to_algebrique pos = 
-  let x,y = pos in 
+let to_algebrique (x,y) = 
   let cols = [| 'a'; 'b'; 'c'; 'd'; 'e'; 'f'; 'g'; 'h' |] in 
   let c = cols.(x-1) in 
   let rangee = string_of_int y in
@@ -18,11 +17,10 @@ let from_algebrique notation =
   let x = (Char.code colonne) - (Char.code 'a') + 1 in
   (x, rangee)
 
-let sur_echiquier pos = let x,y = pos in 
+let sur_echiquier (x,y) = 
   0<x && x<9 && 0<y && y<9
 
   let mouv_fou (x, y) =
-    filter sur_echiquier
       (concat [init 7 (fun i -> (x + i + 1, y + i + 1));
                init 7 (fun i -> (x + i + 1, y - i - 1));
                init 7 (fun i -> (x - i - 1, y + i + 1));
@@ -30,7 +28,6 @@ let sur_echiquier pos = let x,y = pos in
   
 
 let mouv_tour (x, y) =
-  filter sur_echiquier
     (concat [init 7 (fun i -> (x + i + 1, y));
              init 7 (fun i -> (x - i - 1, y));
              init 7 (fun i -> (x, y + i + 1));
@@ -39,15 +36,28 @@ let mouv_tour (x, y) =
   
 
 let mouv_cav (x,y) = 
-  filter sur_echiquier [(x+1,y+2);(x-1,y+2); (x-2,y+1); (x-2,y-1); (x-1,y-2); (x+1,y-2); (x+2,y-1); (x+2,y+1) ]
+  [(x+1,y+2);(x-1,y+2); (x-2,y+1); (x-2,y-1); (x-1,y-2); (x+1,y-2); (x+2,y-1); (x+2,y+1) ]
 
 let mouv_dame pos = (mouv_tour pos) @ (mouv_fou pos)
 
 let mouv_roi (x,y) = 
-  filter sur_echiquier [(x+1,y+1);(x,y+1); (x-1,y+1); (x-1,y); (x-1,y-1); (x,y-1); (x+1,y-1); (x+1,y) ]
+  [(x+1,y+1);(x,y+1); (x-1,y+1); (x-1,y); (x-1,y-1); (x,y-1); (x+1,y-1); (x+1,y) ]
 
     
-let test_piece piece pos = 
+let mouv_pion = Fun.id
+
+
+let get_mouvement p =
+  Fun.compose (filter sur_echiquier) @@
+  match p.p with 
+  | Roi -> mouv_roi
+  | Cavalier -> mouv_cav
+  | Tour -> mouv_tour
+  | Fou -> mouv_fou
+  | Dame -> mouv_dame
+  | Pion -> mouv_tour
+
+(* let test_piece piece pos = 
   map to_algebrique @@ 
   (match piece with 
    | "roi" -> mouv_roi
@@ -61,4 +71,5 @@ let test_piece piece pos=
    | "cav" -> mouv_cav
    | "tour" -> mouv_tour
    | "fou" -> mouv_fou
-   | _ -> mouv_roi) (from_algebrique pos)
+   | "dame" -> mouv_dame
+   | _ -> mouv_roi) (from_algebrique pos) *)
