@@ -20,10 +20,10 @@ let init_pos x y : case =
   in
 
   if 1<y && y<6 then Vide 
-  else if y = 1 then Piece (Noirs, Pion)
-  else if y = 6 then Piece (Blancs, Pion)
-  else if y = 0 then col Noirs (x+1) 
-  else col Blancs (x +1)
+  else if y = 1 then Piece (Blancs, Pion)
+  else if y = 6 then Piece (Noirs, Pion)
+  else if y = 0 then col Blancs (x+1) 
+  else col Noirs (x +1)
 
 let inititialisation () =
   Array.init_matrix 8 8 init_pos
@@ -33,30 +33,32 @@ let diff_color e x y (c,_) =
   | Vide -> true
   | Piece (c',_)-> c' <> c
 
+  
 let deplacer_piece e (x,y) (x',y') = 
   match e.(x).(y) with 
   | Vide -> raise ILLEGAL_MOOVE
   | Piece p -> let f = (get_mouvement p (x,y) ) in 
-    if List.mem (x',y') f  && (diff_color e x' y' p) 
-      then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
-      else raise ILLEGAL_MOOVE
-
+    if List.mem (x',y') f  && (diff_color e x' y' p)
+    then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
+    else raise ILLEGAL_MOOVE
+      
 let print_piece (c,p) =
   match c, p  with 
-  | Blancs , Roi -> print_string "\u{2654}"
-  | Blancs , Dame -> print_string "\u{2655}"
-  | Blancs , Tour -> print_string "\u{2656}"
-  | Blancs , Fou -> print_string "\u{2657}"
-  | Blancs , Cavalier -> print_string "\u{2658}"
-  | Blancs , Pion -> print_string "\u{2659}"
-  | Noirs , Roi -> print_string "\u{265A}"
-  | Noirs , Dame -> print_string "\u{265B}"
-  | Noirs , Tour -> print_string "\u{265C}"
-  | Noirs , Fou -> print_string "\u{265D}"
-  | Noirs , Cavalier -> print_string "\u{265E}"
-  | Noirs , Pion -> print_string "\u{265F}"
-
-let afficher_echiquier e = 
+  | Noirs , Roi -> print_string "\u{2654}"
+  | Noirs , Dame -> print_string "\u{2655}"
+  | Noirs , Tour -> print_string "\u{2656}"
+  | Noirs , Fou -> print_string "\u{2657}"
+  | Noirs , Cavalier -> print_string "\u{2658}"
+  | Noirs , Pion -> print_string "\u{2659}"
+  | Blancs , Roi -> print_string "\u{265A}"
+  | Blancs , Dame -> print_string "\u{265B}"
+  | Blancs , Tour -> print_string "\u{265C}"
+  | Blancs , Fou -> print_string "\u{265D}"
+  | Blancs , Cavalier -> print_string "\u{265E}"
+  | Blancs , Pion -> print_string "\u{265F}"
+  
+  
+  let afficher_echiquier e = 
   for l = 7 downto 0 do 
     for c = 0 to 7 do 
       match e.(c).(l) with 

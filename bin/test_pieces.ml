@@ -44,10 +44,13 @@ let mouv_roi (x,y) =
   [(x+1,y+1);(x,y+1); (x-1,y+1); (x-1,y); (x-1,y-1); (x,y-1); (x+1,y-1); (x+1,y) ]
 
     
-let mouv_pion = Fun.id
+let mouv_pion c (x,y) = 
+  match c with
+  | Blancs -> if y = 1 then [(x,y+1);(x,y+2)] else [(x,y+1)]
+  | Noirs  -> if y = 6 then [(x,y-1);(x,y-2)] else [(x,y-1)]
+  
 
-
-let get_mouvement (_,t) =
+let get_mouvement (c,t) =
   Fun.compose (filter sur_echiquier) @@
   match  t with 
   | Roi -> mouv_roi
@@ -55,7 +58,7 @@ let get_mouvement (_,t) =
   | Tour -> mouv_tour
   | Fou -> mouv_fou
   | Dame -> mouv_dame
-  | Pion -> mouv_tour
+  | Pion -> mouv_pion c
 
 (* let test_piece piece pos = 
   map to_algebrique @@ 

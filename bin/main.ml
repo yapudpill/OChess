@@ -4,7 +4,8 @@ let e = inititialisation ()
 
 let () = afficher_echiquier  e
 
-let _ = deplacer_piece e (1,0) (2,2)
+let _ = deplacer_piece e (4,1) (4,3)
+(* let _ = deplacer_piece e (4,1) (4,3) *)
 
 
 let () = print_newline ()
