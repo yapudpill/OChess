@@ -42,11 +42,35 @@ let est_legal_pion e (c,_) (x,y) (x',y') =
    | Noirs ->  if y-1 = y' then e.(x').(y') = Vide
     else if y-2 = y' then e.(x').(y-1) = Vide && e.(x').(y') = Vide else false
   )
+
+let saute_pas_tour e (x, y) (x', y') =
+  if x = x' then  (* Mouvement horizontal *)
+    let y_min, y_max = min y y', max y y' in
+    List.for_all (fun j -> e.(x).(j) = Vide) (List.init (y_max - y_min) (fun i -> y_min + i + 1))
+  else if y = y' then  (* Mouvement vertical *)
+    let x_min, x_max = min x x', max x x' in
+    List.for_all (fun i -> e.(i).(y) = Vide) (List.init (x_max - x_min) (fun i -> x_min + i + 1))
+  else false  (* Mouvement invalide pour une tour *)
+
+let saute_pas_fou e (x, y) (x', y') =
+  let dir_x = if x' > x then 1 else -1 in
+  let dir_y = if y' > y then 1 else -1 in
+  List.for_all (fun i -> e.(x + i * dir_x).(y + i * dir_y) = Vide) (List.init (abs (x' - x)) (fun i -> i + 1))
+      
+
+let saute_pas e (_,p) (x,y) (x',y') = 
+  match p with 
+  | Fou -> saute_pas_fou e (x,y) (x',y')
+  | Tour -> saute_pas_tour e (x,y) (x',y')
+  | Dame -> if x <> x' then (saute_pas_fou e (x,y) (x',y')) else (saute_pas_tour e (x,y) (x',y'))
+  | _ -> true 
+
+
 let est_legal (e : echiquier) (p : piece) pos_dep (x',y') = 
   match p with
   | _,Pion -> est_legal_pion e p pos_dep (x',y')
   | _ -> let f = (get_mouvement p pos_dep ) in 
-    List.mem (x',y') f  && (diff_color e x' y' p)
+    List.mem (x',y') f  && (diff_color e x' y' p) && (saute_pas e p pos_dep (x',y') )
 
 
 (*
