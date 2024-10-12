@@ -1,4 +1,3 @@
-
 open Test_pieces
 
 exception ILLEGAL_MOOVE
@@ -34,6 +33,49 @@ let diff_color e x y (c,_) =
   | Piece (c',_)-> c' <> c
 
 
+(* let est_attaque_tour e c (x, y) =
+  List.exists (fun (dx, dy) ->
+    let rec aux (x', y') =
+      if not (sur_echiquier (x',y')) then false
+      else match e.(x').(y') with
+        | Piece  c',Tour -> c <> c'
+        | Piece  _,_ -> false  (* Rencontre une autre pièce *)
+        | _  -> aux (x' + dx,y' + dy)
+      in  aux (x + dx,y + dy)
+    ) [(-1, 0); (1, 0); (0, -1); (0, 1)]  *)
+  
+let est_attaque_hor_ver (e : case array array) (c : color) (x,y)   =
+  List.exists (fun (dx,dy) -> 
+    let rec aux (x',y') = 
+      if not (sur_echiquier (x',y')) then false
+      else match e.(x').(y') with 
+      | Piece  (c',Tour) -> c <> c'
+      | Piece (c',Dame) -> c <> c'   (* Rencontre une autre pièce *)
+      | Piece _ -> false
+      | _ -> aux (x'+dx, y'+dy)
+    in aux (x+dx,y+dy)
+  ) [(-1, 0); (1, 0); (0, -1); (0, 1)]
+
+let est_attaque_diag (e : case array array) (c : color) (x,y)   =
+List.exists (fun (dx,dy) -> 
+  let rec aux (x',y') = 
+    if not (sur_echiquier (x',y')) then false
+    else match e.(x').(y') with 
+    | Piece  (c',Fou) -> c <> c'
+    | Piece (c',Dame) -> c <> c'   (* Rencontre une autre pièce *)
+    | Piece _ -> false
+    | _ -> aux (x'+dx, y'+dy)
+  in aux (x+dx,y+dy)
+) [(-1, -1); (-1, 1); (1, -1); (1, 1)]
+
+
+  
+let est_attaque_cav e (c : color) (x,y) = 
+  List.exists (fun (x',y') -> match e.(x').(y') with |Vide -> false | Piece (c',_) -> c<>c' ) (get_mouvement (c,Cavalier) (x,y))
+
+let est_echecs e (c: color) (x,y) = 
+  est_attaque_cav e c (x,y) || (est_attaque_hor_ver e c (x,y)) || (est_attaque_diag e c (x,y))
+
 let est_legal_pion e (c,_) (x,y) (x',y') = 
   if  x <> x' then e.(x').(y') <> Vide else
   (match c with 
@@ -43,10 +85,10 @@ let est_legal_pion e (c,_) (x,y) (x',y') =
     else if y-2 = y' then e.(x').(y-1) = Vide && e.(x').(y') = Vide else false
   )
 let est_legal (e : echiquier) (p : piece) pos_dep (x',y') = 
-  match p with
+  (match p with
   | _,Pion -> est_legal_pion e p pos_dep (x',y')
   | _ -> let f = (get_mouvement p pos_dep ) in 
-    List.mem (x',y') f  && (diff_color e x' y' p)
+    List.mem (x',y') f  && (diff_color e x' y' p))
 
 
 (*
@@ -54,7 +96,7 @@ let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
 
   OK - Le pion mange ne mange pas comme il se déplace, mais en diagonal
   OK - la piece peut en effet aller sur la case 
-  - la piece saute une piece (si elle est différente du cavalier)
+  OK la piece saute une piece (si elle est différente du cavalier)
   OK - la case d'arrivée n'est pas occupée par une piece de la même couleur
   - il ne faut pas être en échecs après avoir joué le coup, que se soit 
     * car on était en échecs avant et que l'on a joué autre chose 
@@ -94,6 +136,3 @@ let afficher_echiquier e =
     done;
     print_newline ()
   done
-
-
-
