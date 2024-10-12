@@ -46,8 +46,8 @@ let mouv_roi (x,y) =
     
 let mouv_pion c (x,y) = 
   match c with
-  | Blancs -> if y = 1 then [(x,y+1);(x,y+2)] else [(x,y+1)]
-  | Noirs  -> if y = 6 then [(x,y-1);(x,y-2)] else [(x,y-1)]
+  | Blancs -> if y = 1 then [(x,y+1);(x,y+2);(x-1,y+1);(x+1,y+1)] else [(x,y+1);(x-1,y+1);(x+1,y+1)]
+  | Noirs  -> if y = 6 then [(x,y-1);(x,y-2);(x-1,y-1);(x+1,y-1)] else [(x,y-1);(x-1,y-1);(x+1,y-1)]
   
 
 let get_mouvement (c,t) =
