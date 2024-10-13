@@ -33,7 +33,7 @@ let diff_color e x y (c,_) =
   | Piece (c',_)-> c' <> c
 
 
-(* let est_attaque_tour e c (x, y) =
+let est_attaque e c (x, y) =
   List.exists (fun (dx, dy) ->
     let rec aux (x', y') =
       if not (sur_echiquier (x',y')) then false
@@ -42,39 +42,62 @@ let diff_color e x y (c,_) =
         | Piece  _,_ -> false  (* Rencontre une autre pièce *)
         | _  -> aux (x' + dx,y' + dy)
       in  aux (x + dx,y + dy)
-    ) [(-1, 0); (1, 0); (0, -1); (0, 1)]  *)
+    ) [(-1, 0); (1, 0); (0, -1); (0, 1)]
   
-let est_attaque_hor_ver (e : case array array) (c : color) (x,y)   =
+let est_attaque_hor_ver e c (x, y) =
+      let directions = [(-1, 0); (1, 0); (0, -1); (0, 1)] in
+      List.exists (fun (dx, dy) ->
+        let rec aux (x', y') =
+          if not (sur_echiquier (x', y')) then false
+          else match e.(x').(y') with
+            | Piece (c', Tour) | Piece (c', Dame) -> 
+                if c <> c' then true else false
+            | Piece _ -> false
+            | Vide -> aux (x' + dx, y' + dy)  (* Continue the search *)
+        in
+        aux (x + dx, y + dy)
+      ) directions
+    
+
+let copie_echiquier e = 
+  Array.map Array.copy e
+
+let pos_suivante e (x,y) (x',y') =
+  let copie = copie_echiquier e in 
+  (copie.(x').(y') <- copie.(x).(y); copie.(x).(y) <- Vide); copie
+  
+let est_attaque_diag (e : case array array) (c : color) (x,y)   =
   List.exists (fun (dx,dy) -> 
     let rec aux (x',y') = 
       if not (sur_echiquier (x',y')) then false
       else match e.(x').(y') with 
-      | Piece  (c',Tour) -> c <> c'
-      | Piece (c',Dame) -> c <> c'   (* Rencontre une autre pièce *)
+      | Piece  (c',Fou) -> c <> c'
+      | Piece (c',Dame) -> c <> c'   
       | Piece _ -> false
       | _ -> aux (x'+dx, y'+dy)
     in aux (x+dx,y+dy)
-  ) [(-1, 0); (1, 0); (0, -1); (0, 1)]
-
-let est_attaque_diag (e : case array array) (c : color) (x,y)   =
-List.exists (fun (dx,dy) -> 
-  let rec aux (x',y') = 
-    if not (sur_echiquier (x',y')) then false
-    else match e.(x').(y') with 
-    | Piece  (c',Fou) -> c <> c'
-    | Piece (c',Dame) -> c <> c'   (* Rencontre une autre pièce *)
-    | Piece _ -> false
-    | _ -> aux (x'+dx, y'+dy)
-  in aux (x+dx,y+dy)
-) [(-1, -1); (-1, 1); (1, -1); (1, 1)]
-
+    ) [(-1, -1); (-1, 1); (1, -1); (1, 1)]
+    
+let est_attaque_pion e c (x,y) =
+  let cases = List.filter sur_echiquier (if c = Blancs then [(x-1,y+1);(x+1,y+1)] else [(x-1,y-1);(x+1,y-1)]) in 
+  List.exists (fun (x',y') -> match e.(x').(y') with | Piece (c',p) -> p = Pion && c'<> c | _ -> false ) cases
 
   
 let est_attaque_cav e (c : color) (x,y) = 
   List.exists (fun (x',y') -> match e.(x').(y') with |Vide -> false | Piece (c',_) -> c<>c' ) (get_mouvement (c,Cavalier) (x,y))
 
-let est_echecs e (c: color) (x,y) = 
-  est_attaque_cav e c (x,y) || (est_attaque_hor_ver e c (x,y)) || (est_attaque_diag e c (x,y))
+let est_echecs e (c: color) pos_roi = 
+  let b = (est_attaque_cav e c pos_roi || (est_attaque_hor_ver e c pos_roi) 
+  || (est_attaque_diag e c pos_roi) || (est_attaque_pion e c pos_roi)) in 
+  (if b then match c with 
+    |Blancs -> ( print_string( "les blancs sont en échecs"); print_newline () ) 
+    |Noirs -> ( print_string( "les noirs sont en échecs"); print_newline () )
+  else ( print_string "n'est pas échecs") ; print_newline () ) ; b
+  
+
+let est_echecs' e c pos_roi = 
+  (est_attaque_pion e c pos_roi)
+
 
 let est_legal_pion e (c,_) (x,y) (x',y') = 
   if  x <> x' then e.(x').(y') <> Vide else
@@ -84,12 +107,17 @@ let est_legal_pion e (c,_) (x,y) (x',y') =
    | Noirs ->  if y-1 = y' then e.(x').(y') = Vide
     else if y-2 = y' then e.(x').(y-1) = Vide && e.(x').(y') = Vide else false
   )
-let est_legal (e : echiquier) (p : piece) pos_dep (x',y') = 
+
+let print_bool b = 
+    if b then (print_string "true"; print_newline ())
+    else (print_string "false"; print_newline ())
+
+
+let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
   (match p with
   | _,Pion -> est_legal_pion e p pos_dep (x',y')
   | _ -> let f = (get_mouvement p pos_dep ) in 
-    List.mem (x',y') f  && (diff_color e x' y' p))
-
+    List.mem (x',y') f  && (diff_color e x' y' p)) && not (est_echecs (pos_suivante e pos_dep (x',y')) Blancs (4,0) )
 
 (*
  Un coup est légal si :
