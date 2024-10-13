@@ -31,18 +31,6 @@ let diff_color e x y (c,_) =
   match e.(x).(y) with
   | Vide -> true
   | Piece (c',_)-> c' <> c
-
-
-let est_attaque e c (x, y) =
-  List.exists (fun (dx, dy) ->
-    let rec aux (x', y') =
-      if not (sur_echiquier (x',y')) then false
-      else match e.(x').(y') with
-        | Piece  c',Tour -> c <> c'
-        | Piece  _,_ -> false  (* Rencontre une autre pièce *)
-        | _  -> aux (x' + dx,y' + dy)
-      in  aux (x + dx,y + dy)
-    ) [(-1, 0); (1, 0); (0, -1); (0, 1)]
   
 let est_attaque_hor_ver e c (x, y) =
       let directions = [(-1, 0); (1, 0); (0, -1); (0, 1)] in
@@ -57,14 +45,7 @@ let est_attaque_hor_ver e c (x, y) =
         in
         aux (x + dx, y + dy)
       ) directions
-    
 
-let copie_echiquier e = 
-  Array.map Array.copy e
-
-let pos_suivante e (x,y) (x',y') =
-  let copie = copie_echiquier e in 
-  (copie.(x').(y') <- copie.(x).(y); copie.(x).(y) <- Vide); copie
   
 let est_attaque_diag (e : case array array) (c : color) (x,y)   =
   List.exists (fun (dx,dy) -> 
@@ -93,10 +74,6 @@ let est_echecs e (c: color) pos_roi =
     |Blancs -> ( print_string( "les blancs sont en échecs"); print_newline () ) 
     |Noirs -> ( print_string( "les noirs sont en échecs"); print_newline () )
   else ( print_string "n'est pas échecs") ; print_newline () ) ; b
-  
-
-let est_echecs' e c pos_roi = 
-  (est_attaque_pion e c pos_roi)
 
 
 let est_legal_pion e (c,_) (x,y) (x',y') = 
@@ -108,10 +85,9 @@ let est_legal_pion e (c,_) (x,y) (x',y') =
     else if y-2 = y' then e.(x').(y-1) = Vide && e.(x').(y') = Vide else false
   )
 
-let print_bool b = 
-    if b then (print_string "true"; print_newline ())
-    else (print_string "false"; print_newline ())
-
+let pos_suivante e (x,y) (x',y') =
+  let copie = Array.map Array.copy e in 
+  (copie.(x').(y') <- copie.(x).(y); copie.(x).(y) <- Vide); copie
 
 let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
   (match p with
@@ -126,9 +102,12 @@ let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
   OK - la piece peut en effet aller sur la case 
   OK la piece saute une piece (si elle est différente du cavalier)
   OK - la case d'arrivée n'est pas occupée par une piece de la même couleur
-  - il ne faut pas être en échecs après avoir joué le coup, que se soit 
+  OK - il ne faut pas être en échecs après avoir joué le coup, que se soit 
     * car on était en échecs avant et que l'on a joué autre chose 
     * car notre pièce était clouée (i.e. que si on l'enlève cela nous met en situation d'échecs)
+
+  Pour le moment faire un échecs est un coup illégale. 
+  Cependant dès que le système de tour est mis en place ce problème sera réglé et très facilement.
 *)
 
 
