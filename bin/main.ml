@@ -27,13 +27,11 @@ TEST ECHECS PION
 
 
 
-let _ = deplacer_piece e (5,1) (5,2) 
+let _ = deplacer_piece e (4,1) (4,3) 
 let _ = deplacer_piece e (4,6) (4,4) 
 
-(* let _ = deplacer_piece e (3,7) (7,3) *)
-
-
-
+let _ = deplacer_piece e (3,7) (7,3)
+let _ = deplacer_piece e (7,3) (5,1)
 
 
 

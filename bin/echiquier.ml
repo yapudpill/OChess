@@ -6,7 +6,6 @@ type case = Vide | Piece of piece
 
 type echiquier = case array array
 
-
 let init_pos x y : case = 
 
   let col c = function
@@ -32,49 +31,34 @@ let diff_color e x y (c,_) =
   | Vide -> true
   | Piece (c',_)-> c' <> c
   
-let est_attaque_hor_ver e c (x, y) =
-      let directions = [(-1, 0); (1, 0); (0, -1); (0, 1)] in
-      List.exists (fun (dx, dy) ->
-        let rec aux (x', y') =
-          if not (sur_echiquier (x', y')) then false
-          else match e.(x').(y') with
-            | Piece (c', Tour) | Piece (c', Dame) -> 
-                if c <> c' then true else false
-            | Piece _ -> false
-            | Vide -> aux (x' + dx, y' + dy)  (* Continue the search *)
-        in
-        aux (x + dx, y + dy)
-      ) directions
-
-  
-let est_attaque_diag (e : case array array) (c : color) (x,y)   =
-  List.exists (fun (dx,dy) -> 
-    let rec aux (x',y') = 
-      if not (sur_echiquier (x',y')) then false
-      else match e.(x').(y') with 
-      | Piece  (c',Fou) -> c <> c'
-      | Piece (c',Dame) -> c <> c'   
+let detection_piece e c (x, y) p' (dx, dy)  =
+  let rec aux (x', y') =
+    if not (sur_echiquier (x', y')) then false
+    else match e.(x').(y') with
+      | Piece (c', p) when p = p' || p = Dame -> c <> c'  (* Dame ou pièce spécifiée *)
       | Piece _ -> false
-      | _ -> aux (x'+dx, y'+dy)
-    in aux (x+dx,y+dy)
-    ) [(-1, -1); (-1, 1); (1, -1); (1, 1)]
+      | Vide -> aux (x' + dx, y' + dy)
+  in
+    aux (x + dx, y + dy)
+
+let est_attaque_ligne e c (x, y) (p : ptype) =
+  let directions = match p with
+    | Tour -> [(-1, 0); (1, 0); (0, -1); (0, 1)]  
+    | Fou -> [(-1, -1); (-1, 1); (1, -1); (1, 1)]  
+    | _ -> [(-1, 0); (1, 0); (0, -1); (0, 1); (-1, -1); (-1, 1); (1, -1); (1, 1)]  
+  in
+    List.exists (detection_piece e c (x, y) p) directions
     
 let est_attaque_pion e c (x,y) =
   let cases = List.filter sur_echiquier (if c = Blancs then [(x-1,y+1);(x+1,y+1)] else [(x-1,y-1);(x+1,y-1)]) in 
   List.exists (fun (x',y') -> match e.(x').(y') with | Piece (c',p) -> p = Pion && c'<> c | _ -> false ) cases
 
-  
 let est_attaque_cav e (c : color) (x,y) = 
   List.exists (fun (x',y') -> match e.(x').(y') with |Vide -> false | Piece (c',_) -> c<>c' ) (get_mouvement (c,Cavalier) (x,y))
 
 let est_echecs e (c: color) pos_roi = 
-  let b = (est_attaque_cav e c pos_roi || (est_attaque_hor_ver e c pos_roi) 
-  || (est_attaque_diag e c pos_roi) || (est_attaque_pion e c pos_roi)) in 
-  (if b then match c with 
-    |Blancs -> ( print_string( "les blancs sont en échecs"); print_newline () ) 
-    |Noirs -> ( print_string( "les noirs sont en échecs"); print_newline () )
-  else ( print_string "n'est pas échecs") ; print_newline () ) ; b
-
+  (est_attaque_cav e c pos_roi || (est_attaque_ligne e c pos_roi Fou) 
+  || (est_attaque_ligne e c pos_roi Tour) || (est_attaque_pion e c pos_roi))
 
 let est_legal_pion e (c,_) (x,y) (x',y') = 
   if  x <> x' then e.(x').(y') <> Vide else
