@@ -75,26 +75,11 @@ let pos_suivante e (x,y) (x',y') =
   let copie = Array.map Array.copy e in 
   (copie.(x').(y') <- copie.(x).(y); copie.(x).(y) <- Vide); copie
 
-let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
-  (match p with
-    | _,Pion -> est_legal_pion e p pos_dep (x',y')
+let est_legal (e : echiquier) ((c, p') as p : piece) pos_dep (x',y') =
+  (match p' with
+    | Pion -> est_legal_pion e p pos_dep (x',y')
     | _ -> let f = (get_mouvement p pos_dep ) in List.mem (x',y') f  && (diff_color e x' y' p)) 
-  && not (est_echecs (pos_suivante e pos_dep (x',y')) Blancs (4,0) )
-
-(*
- Un coup est légal si :
-
-  OK - Le pion mange ne mange pas comme il se déplace, mais en diagonal
-  OK - la piece peut en effet aller sur la case 
-  OK la piece saute une piece (si elle est différente du cavalier)
-  OK - la case d'arrivée n'est pas occupée par une piece de la même couleur
-  OK - il ne faut pas être en échecs après avoir joué le coup, que se soit 
-    * car on était en échecs avant et que l'on a joué autre chose 
-    * car notre pièce était clouée (i.e. que si on l'enlève cela nous met en situation d'échecs)
-
-  Pour le moment faire un échecs est un coup illégale. 
-  Cependant dès que le système de tour est mis en place ce problème sera réglé et très facilement.
-*)
+  && not (est_echecs (pos_suivante e pos_dep (x',y')) c (4,match c with Blancs -> 0 | Noirs -> 7)) 
 
 let print_piece (c,p) =
   match c, p  with 
