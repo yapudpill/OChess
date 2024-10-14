@@ -5,7 +5,7 @@ type ptype = Pion | Tour | Cavalier | Fou | Dame | Roi
 type piece = color * ptype
 
 let sur_echiquier (x,y) = 
-  0<x && x<9 && 0<y && y<9
+  -1<x && x<8 && -1<y && y<8
 
   let mouv_fou (x, y) =
       (concat [init 7 (fun i -> (x + i + 1, y + i + 1));

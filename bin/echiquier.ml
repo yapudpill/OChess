@@ -57,8 +57,10 @@ let est_attaque_cav e (c : color) (x,y) =
   List.exists (fun (x',y') -> match e.(x').(y') with |Vide -> false | Piece (c',_) -> c<>c' ) (get_mouvement (c,Cavalier) (x,y))
 
 let est_echecs e (c: color) pos_roi = 
-  (est_attaque_cav e c pos_roi || (est_attaque_ligne e c pos_roi Fou) 
-  || (est_attaque_ligne e c pos_roi Tour) || (est_attaque_pion e c pos_roi))
+  est_attaque_cav e c pos_roi
+  || est_attaque_ligne e c pos_roi Tour
+  || est_attaque_pion e c pos_roi
+  || est_attaque_ligne e c pos_roi Fou
 
 let est_legal_pion e (c,_) (x,y) (x',y') = 
   if  x <> x' then e.(x').(y') <> Vide else
@@ -75,9 +77,9 @@ let pos_suivante e (x,y) (x',y') =
 
 let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
   (match p with
-  | _,Pion -> est_legal_pion e p pos_dep (x',y')
-  | _ -> let f = (get_mouvement p pos_dep ) in 
-    List.mem (x',y') f  && (diff_color e x' y' p)) && not (est_echecs (pos_suivante e pos_dep (x',y')) Blancs (4,0) )
+    | _,Pion -> est_legal_pion e p pos_dep (x',y')
+    | _ -> let f = (get_mouvement p pos_dep ) in List.mem (x',y') f  && (diff_color e x' y' p)) 
+  && not (est_echecs (pos_suivante e pos_dep (x',y')) Blancs (4,0) )
 
 (*
  Un coup est légal si :
@@ -94,14 +96,6 @@ let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
   Cependant dès que le système de tour est mis en place ce problème sera réglé et très facilement.
 *)
 
-
-let deplacer_piece e (x,y) (x',y') = 
-  match e.(x).(y) with 
-  | Vide -> raise ILLEGAL_MOOVE
-  | Piece p -> if est_legal e p (x,y) (x',y')
-    then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
-    else raise ILLEGAL_MOOVE
-      
 let print_piece (c,p) =
   match c, p  with 
   | Noirs , Roi -> print_string "\u{2654}"
@@ -116,6 +110,13 @@ let print_piece (c,p) =
   | Blancs , Fou -> print_string "\u{265D}"
   | Blancs , Cavalier -> print_string "\u{265E}"
   | Blancs , Pion -> print_string "\u{265F}"
+
+let deplacer_piece e (x,y) (x',y') = 
+  match e.(x).(y) with 
+  | Vide -> raise ILLEGAL_MOOVE
+  | Piece p -> if est_legal e p (x,y) (x',y')
+    then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
+    else raise ILLEGAL_MOOVE
   
   
 let afficher_echiquier e = 
