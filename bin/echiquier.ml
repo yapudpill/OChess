@@ -1,4 +1,3 @@
-
 open Test_pieces
 
 exception ILLEGAL_MOOVE
@@ -6,7 +5,6 @@ exception ILLEGAL_MOOVE
 type case = Vide | Piece of piece
 
 type echiquier = case array array
-
 
 let init_pos x y : case = 
 
@@ -32,7 +30,37 @@ let diff_color e x y (c,_) =
   match e.(x).(y) with
   | Vide -> true
   | Piece (c',_)-> c' <> c
+  
+let detection_piece e c (x, y) p' (dx, dy)  =
+  let rec aux (x', y') =
+    if not (sur_echiquier (x', y')) then false
+    else match e.(x').(y') with
+      | Piece (c', p) when p = p' || p = Dame -> c <> c'  (* Dame ou pièce spécifiée *)
+      | Piece _ -> false
+      | Vide -> aux (x' + dx, y' + dy)
+  in
+    aux (x + dx, y + dy)
 
+let est_attaque_ligne e c (x, y) (p : ptype) =
+  let directions = match p with
+    | Tour -> [(-1, 0); (1, 0); (0, -1); (0, 1)]  
+    | Fou -> [(-1, -1); (-1, 1); (1, -1); (1, 1)]  
+    | _ -> [(-1, 0); (1, 0); (0, -1); (0, 1); (-1, -1); (-1, 1); (1, -1); (1, 1)]  
+  in
+    List.exists (detection_piece e c (x, y) p) directions
+    
+let est_attaque_pion e c (x,y) =
+  let cases = List.filter sur_echiquier (if c = Blancs then [(x-1,y+1);(x+1,y+1)] else [(x-1,y-1);(x+1,y-1)]) in 
+  List.exists (fun (x',y') -> match e.(x').(y') with | Piece (c',p) -> p = Pion && c'<> c | _ -> false ) cases
+
+let est_attaque_cav e (c : color) (x,y) = 
+  List.exists (fun (x',y') -> match e.(x').(y') with |Vide -> false | Piece (c',_) -> c<>c' ) (get_mouvement (c,Cavalier) (x,y))
+
+let est_echecs e (c: color) pos_roi = 
+  est_attaque_cav e c pos_roi
+  || est_attaque_ligne e c pos_roi Tour
+  || est_attaque_pion e c pos_roi
+  || est_attaque_ligne e c pos_roi Fou
 
 let est_legal_pion e (c,_) (x,y) (x',y') = 
   if  x <> x' then e.(x').(y') <> Vide else
@@ -72,27 +100,16 @@ let est_legal (e : echiquier) (p : piece) pos_dep (x',y') =
   | _ -> let f = (get_mouvement p pos_dep ) in 
     List.mem (x',y') f  && (diff_color e x' y' p) && (saute_pas e p pos_dep (x',y') )
 
+let pos_suivante e (x,y) (x',y') =
+  let copie = Array.map Array.copy e in 
+  (copie.(x').(y') <- copie.(x).(y); copie.(x).(y) <- Vide); copie
 
-(*
- Un coup est légal si :
+let est_legal (e : echiquier) ((c, p') as p : piece) pos_dep (x',y') =
+  (match p' with
+    | Pion -> est_legal_pion e p pos_dep (x',y')
+    | _ -> let f = (get_mouvement p pos_dep ) in List.mem (x',y') f  && (diff_color e x' y' p)) 
+  && not (est_echecs (pos_suivante e pos_dep (x',y')) c (4,match c with Blancs -> 0 | Noirs -> 7)) 
 
-  OK - Le pion mange ne mange pas comme il se déplace, mais en diagonal
-  OK - la piece peut en effet aller sur la case 
-  - la piece saute une piece (si elle est différente du cavalier)
-  OK - la case d'arrivée n'est pas occupée par une piece de la même couleur
-  - il ne faut pas être en échecs après avoir joué le coup, que se soit 
-    * car on était en échecs avant et que l'on a joué autre chose 
-    * car notre pièce était clouée (i.e. que si on l'enlève cela nous met en situation d'échecs)
-*)
-
-
-let deplacer_piece e (x,y) (x',y') = 
-  match e.(x).(y) with 
-  | Vide -> raise ILLEGAL_MOOVE
-  | Piece p -> if est_legal e p (x,y) (x',y')
-    then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
-    else raise ILLEGAL_MOOVE
-      
 let print_piece (c,p) =
   match c, p  with 
   | Noirs , Roi -> print_string "\u{2654}"
@@ -107,6 +124,13 @@ let print_piece (c,p) =
   | Blancs , Fou -> print_string "\u{265D}"
   | Blancs , Cavalier -> print_string "\u{265E}"
   | Blancs , Pion -> print_string "\u{265F}"
+
+let deplacer_piece e (x,y) (x',y') = 
+  match e.(x).(y) with 
+  | Vide -> raise ILLEGAL_MOOVE
+  | Piece p -> if est_legal e p (x,y) (x',y')
+    then (e.(x').(y') <-e.(x).(y); e.(x).(y) <- Vide;  true)
+    else raise ILLEGAL_MOOVE
   
   
 let afficher_echiquier e = 
@@ -118,6 +142,3 @@ let afficher_echiquier e =
     done;
     print_newline ()
   done
-
-
-
