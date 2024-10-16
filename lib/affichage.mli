@@ -4,5 +4,4 @@ val from_algebrique : string -> Piece.ptype * (int * int)
 
 
 (* Échiquier *)
-val string_of_echiquier :
-  ?couleur:bool -> Echiquier.t -> string
+val string_of_echiquier : ?couleur:bool -> Echiquier.t -> string

@@ -39,11 +39,11 @@ let mouv_cav_dir pos = List.map singleton (mouv_cav pos)
 let mouv_pion_dir c (x, y) =
   let devant, diagonale = match c with
   | Blanc ->
-    (if y = 1 then [ (x, y+1); (x, y+2) ] else [ (x, y+1) ]),
-    [ (x-1, y+1); (x+1, y+1) ]
+    (if y = 1 then [ (x, y+1); (x, y+2) ] else if y < 6 then [ (x, y+1) ] else []),
+    List.filter sur_echiquier [ (x-1, y+1); (x+1, y+1) ]
   | Noir  ->
-    (if y = 6 then [ (x, y-1); (x, y-2) ] else [ (x, y-1) ]),
-    [ (x-1, y-1); (x+1, y-1) ]
+    (if y = 6 then [ (x, y-1); (x, y-2) ] else if y > 0 then [ (x, y-1) ] else []),
+    List.filter sur_echiquier [ (x-1, y-1); (x+1, y-1) ]
   in
   devant :: List.map singleton diagonale
 

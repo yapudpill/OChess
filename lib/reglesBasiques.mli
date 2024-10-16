@@ -10,4 +10,4 @@ val est_legal : Partie.t -> int * int -> int * int -> bool
 coup est légal et renvoie le nouvel état de la partie.
 
 Si le dépacement n'est pas légal, lève Mouvement_invalide *)
-val deplacer_piece : Partie.t -> int * int -> int * int -> Partie.t
+val jouer : Partie.t -> int * int -> int * int -> Partie.t

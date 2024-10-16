@@ -11,6 +11,12 @@ let est_vide_ou_adversaire c = function
 | Vide -> true
 | Piece (c', _) -> c = c'
 
+let contient_case p = function
+| Vide -> false
+| Piece p' -> p' = p
+
+let contient p echiquier (x, y) = contient_case p echiquier.(x).(y)
+
 let init_pos x y =
   let arriere = function
   | 0 | 7 -> Tour
