@@ -9,5 +9,6 @@ val init_echiquier : unit -> t
 val (.${}) : t -> int * int -> case
 val (.${}<-) : t -> int * int -> case -> unit
 
+val est_adversaire : Piece.couleur -> case -> bool
 val est_vide_ou_adversaire : Piece.couleur -> case -> bool
 val contient : Piece.t -> t -> int * int -> bool

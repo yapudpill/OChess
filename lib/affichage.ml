@@ -33,7 +33,7 @@ let from_algebrique str =
     let str = String.sub str (len - 2) 2 in
     let x = int_of_char (Char.lowercase_ascii str.[0]) - 97 in (* 97 est le code ascii de 'a' *)
     let y = int_of_char str.[1] - 49 in   (* 49 est le code ascii de '1' *)
-    assert (0 <= x && x <= 7 && 0 <= y && y <= x);
+    assert (0 <= x && x <= 7 && 0 <= y && y <= 7);
     p, (x, y)
 
 
