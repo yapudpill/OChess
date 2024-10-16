@@ -27,6 +27,10 @@ let (.${}) echiquier (x, y) = echiquier.(x).(y)
 
 let (.${}<-) echiquier (x, y) c = echiquier.(x).(y) <- c
 
+let est_adversaire c = function
+| Vide -> false
+| Piece (c', _) -> c <> c'
+
 let est_vide_ou_adversaire c = function
 | Vide -> true
 | Piece (c', _) -> c <> c'
