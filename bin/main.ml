@@ -12,9 +12,9 @@ exception Mouvement_ambigu
 
 (* let rec print_list printer = function
 | [] -> print_newline ()
-| h :: t -> printer h; print_list printer t
+| h :: t -> printer h; print_list printer t *)
 
-let print_couple (x,y) = 
+(* let print_couple (x,y) = 
   Printf.printf "(%d,%d)\n" x y *)
 
 let case_depart_cav partie p pos = 
@@ -36,24 +36,18 @@ let case_depart_reste partie p pos =
 let case_depart_pion partie (x,y) = 
   let dy = if partie.trait = Blanc then 1 else -1 in
   if est_adversaire partie.trait partie.echiquier.${x,y} then 
-    if x = 0 && contient (partie.trait,Pion ) partie.echiquier (x+1,y+dy) then (x+1,y+dy)
-    else if x = 7 && contient (partie.trait,Pion ) partie.echiquier (x-1,y+dy) then (x-1,y+dy)
+    if x = 0 && contient (partie.trait,Pion ) partie.echiquier (x+1,y-dy) then (x+1,y-dy)
+    else if x = 7 && contient (partie.trait,Pion ) partie.echiquier (x-1,y-dy) then (x-1,y-dy)
     else 
       let possibles =
-        (if contient (partie.trait,Pion ) partie.echiquier (x+1,y+dy) then [(x+1,y+dy)] else []) @
-        (if contient (partie.trait,Pion ) partie.echiquier (x-1,y+dy) then [(x-1,y+dy)] else [])
+        (if contient (partie.trait,Pion ) partie.echiquier (x+1,y-dy) then [(x+1,y-dy)] else []) @
+      (if contient (partie.trait,Pion ) partie.echiquier (x-1,y-dy) then [(x-1,y-dy)] else [])
       in
       if List.length possibles = 2 then raise Mouvement_ambigu else if List.length possibles = 0 then raise Mouvement_invalide else List.hd possibles
   else 
-    if contient (partie.trait,Pion ) partie.echiquier (x,y+dy) then (x,y+dy) 
-    else if contient (partie.trait,Pion ) partie.echiquier (x,y+2*dy) then (x,y+2*dy)
+    if contient (partie.trait,Pion ) partie.echiquier (x,y-dy) then (x,y-dy) 
+    else if contient (partie.trait,Pion ) partie.echiquier (x,y-2*dy) then (x,y-2*dy)
     else raise Mouvement_invalide
-
-
-
-
-    
-
 
 
 let case_depart partie p pos =
