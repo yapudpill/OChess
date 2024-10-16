@@ -60,7 +60,7 @@ let string_of_echiquier ?(couleur = true) e =
     for c = 0 to 7 do
       if couleur then Buffer.add_string buf bg_cols.((l + c) mod 2);
 
-      begin match e.(c).(l) with
+      begin match e.${c, l} with
       | Vide -> Buffer.add_string buf (if couleur then "   " else " . ")
       | Piece (c, p) ->
         Buffer.add_char buf ' ';

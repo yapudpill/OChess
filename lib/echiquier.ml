@@ -3,20 +3,7 @@ open Piece
 type case = Vide | Piece of Piece.t
 type t = case array array
 
-let est_adversaire c = function
-| Vide -> false
-| Piece (c', _) -> c = c'
-
-let est_vide_ou_adversaire c = function
-| Vide -> true
-| Piece (c', _) -> c = c'
-
-let contient_case p = function
-| Vide -> false
-| Piece p' -> p' = p
-
-let contient p echiquier (x, y) = contient_case p echiquier.(x).(y)
-
+(* Initialisation d'un échiquier *)
 let init_pos x y =
   let arriere = function
   | 0 | 7 -> Tour
@@ -34,3 +21,18 @@ let init_pos x y =
     Piece (c, p)
 
 let init_echiquier () = Array.init_matrix 8 8 init_pos
+
+(* Manipulation des échiquiers *)
+let (.${}) echiquier (x, y) = echiquier.(x).(y)
+
+let (.${}<-) echiquier (x, y) c = echiquier.(x).(y) <- c
+
+let est_vide_ou_adversaire c = function
+| Vide -> true
+| Piece (c', _) -> c <> c'
+
+let contient_case p = function
+| Vide -> false
+| Piece p' -> p' = p
+
+let contient p echiquier (x, y) = contient_case p echiquier.${x, y}

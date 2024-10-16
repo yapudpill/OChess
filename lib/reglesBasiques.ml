@@ -10,7 +10,7 @@ let filter_saute_pas echiquier couleur coups_dir =
   let rec filter acc = function
   | [] ->  acc
   | (x, y) :: t ->
-    begin match echiquier.(x).(y) with
+    begin match echiquier.${x, y} with
     | Vide -> filter ((x, y) :: acc) t
     | Piece (c, _) -> if c <> couleur then (x, y) :: acc else acc
     end
@@ -21,13 +21,13 @@ let filter_saute_pas echiquier couleur coups_dir =
 let deplacements_legaux_pion echiquier couleur ((x, _) as dep) =
   mouv_pion couleur dep
   |> List.filter (fun (x', y') ->
-      match echiquier.(x').(y') with
+      match echiquier.${x', y'} with
       | Vide -> x = x'
       | Piece (c, _) -> x <> x' && c <> couleur)
 
 let deplacements_legaux_cavalier echiquier couleur dep =
   mouv_cav dep
-  |> List.filter (fun (x, y) -> est_vide_ou_adversaire couleur echiquier.(x).(y))
+  |> List.filter (fun (x, y) -> est_vide_ou_adversaire couleur echiquier.${x, y})
 
 
 let deplacements_legaux echiquier piece dep =
@@ -49,9 +49,9 @@ let est_attaquee echiquier couleur pos =
 (* Obtention des coups légaux *)
 let deplacer_piece partie (x,y) (x',y') =
   let echiquier = Array.map Array.copy partie.echiquier in
-  echiquier.(x').(y') <- echiquier.(x).(y);
-  echiquier.(x).(y) <- Vide;
-  let roi_blanc, roi_noir = match echiquier.(x').(y') with
+  echiquier.${x', y'} <- echiquier.${x, y};
+  echiquier.${x, y} <- Vide;
+  let roi_blanc, roi_noir = match echiquier.${x', y'} with
   | Piece (Blanc, Roi) -> (x', y'), partie.roi_noir
   | Piece (Noir, Roi) -> partie.roi_blanc, (x', y')
   | _ -> partie.roi_blanc, partie.roi_noir
@@ -59,7 +59,7 @@ let deplacer_piece partie (x,y) (x',y') =
   {echiquier; roi_blanc; roi_noir; trait = inverse partie.trait}
 
 let coups_legaux partie ((x, y) as dep) =
-  match partie.echiquier.(x).(y) with
+  match partie.echiquier.${x, y} with
   | Vide -> []
   | Piece (c, p) ->
     if c <> partie.trait then []
