@@ -1,22 +1,23 @@
-open Echiquier
+open OChess
+open Affichage
+open Partie
+open ReglesBasiques
+
+let joue_affiche p dep arr =
+  let p = jouer p dep arr in
+  print_endline (string_of_echiquier ~couleur:false p.echiquier);
+  p
+
+let p = init_partie ()
+
+let () = print_endline @@ string_of_echiquier p.echiquier
+let p = joue_affiche p (4,1) (4,3)
+let p = joue_affiche p (4,6) (4,4)
+let p = joue_affiche p (3,0) (5,2)
+let p = joue_affiche p (0,6) (0,5)
+let p = joue_affiche p (5,2) (5,6)
+let _ = joue_affiche p (4,7) (5,6)
+(* let _ = joue_affiche p (5,7) (4,6) *)
 
 
-let e = inititialisation ()
-
-let () =
-  afficher_echiquier  e;
-  let _ = deplacer_piece e (5,1) (5,2) in
-  let _ = deplacer_piece e (4,6) (4,4) in
-  let _ = deplacer_piece e (6,1) (6,3) in
-  let _ = deplacer_piece e (3,7) (7,3) in
-  let _ = deplacer_piece e (0,1) (0,2) in
-  print_newline ();
-  print_newline ();
-  afficher_echiquier  e
-
-
-(* 
-CONVENTION : la case e1 se note (4,0)
-
-
-*)
+(* CONVENTION : la case e1 se note (4,0) *)
