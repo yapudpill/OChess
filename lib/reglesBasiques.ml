@@ -17,7 +17,6 @@ let filter_saute_pas echiquier couleur coups_dir =
   in
   List.concat @@ List.map (filter []) coups_dir
 
-
 let deplacements_legaux_pion echiquier couleur ((x, _) as dep) =
   mouv_pion couleur dep
   |> List.filter (fun (x', y') ->
@@ -29,13 +28,11 @@ let deplacements_legaux_cavalier echiquier couleur dep =
   mouv_cav dep
   |> List.filter (fun (x, y) -> est_vide_ou_adversaire couleur echiquier.${x, y})
 
-
 let deplacements_legaux echiquier piece dep =
   match piece with
   | (c, Pion) -> deplacements_legaux_pion echiquier c dep
   | (c, Cavalier) -> deplacements_legaux_cavalier echiquier c dep
   | (c, p) -> filter_saute_pas echiquier c (mouvement_dir (c, p) dep)
-
 
 (* Gestions des échecs *)
 let est_attaquee echiquier couleur pos =
@@ -44,7 +41,6 @@ let est_attaquee echiquier couleur pos =
       let deps = deplacements_legaux echiquier (couleur, p) pos in
       List.exists (fun (x, y) -> contient (inverse couleur, p) echiquier (x, y)) deps
       )
-
 
 (* Obtention des coups légaux *)
 
@@ -56,10 +52,10 @@ let deplacer_piece partie ((x, _) as dep) arr =
   let (tgb, rb, tdb), (tgn, rn, tdn) = partie.roque_blanc, partie.roque_noir in
   let roi_blanc, roi_noir, roque_blanc, roque_noir = match echiquier.${arr} with
   | Piece (Blanc, Roi) -> arr, partie.roi_noir, (tgb, false, tdb), (tgn, rn, tdn)
-  | Piece (Noir, Roi) -> partie.roi_blanc, arr, (tgb, rb, tdb), (tgn, false, tdn)
+  | Piece (Noir, Roi)  -> partie.roi_blanc, arr, (tgb, rb, tdb), (tgn, false, tdn)
   | Piece (Blanc, Tour) -> let tgb, tdb = (x = 0 || tgb, x = 7 || tdb) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  | Piece (Noir, Tour) -> let tgn, tdn = (x = 0 || tgn, x = 7 || tdn) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  | _ -> partie.roi_blanc, partie.roi_noir, (tgb, false, tdb), (tgn, rn, tdn)
+  | Piece (Noir, Tour)  -> let tgn, tdn = (x = 0 || tgn, x = 7 || tdn) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
+  | _ -> partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
   in
   {echiquier; roi_blanc; roi_noir; trait = inverse partie.trait; roque_blanc; roque_noir}
 
@@ -81,7 +77,7 @@ let jouer partie dep arr =
   else None
 
 
-(* estion du mat pat*)
+(* Gestion du mat pat*)
 
 let parable partie (x',y') =
     let x,y = (match partie.trait with |Blanc -> partie.roi_blanc | _ -> partie.roi_noir) in
@@ -113,7 +109,6 @@ let pat partie =
 
 let trouver_echec partie= partie.roi_blanc
 
-
 let print_bool b =
   if b then print_endline "true" else print_endline "false"
 
@@ -132,6 +127,7 @@ let peut_roquer partie  type_roque=
 let roque partie type_roque=
     if not @@ peut_roquer partie type_roque then raise Mouvement_invalide
     else
+      print_endline "ici";
       let partie = match partie.trait with
       | Blanc -> { partie with roque_blanc = false,false,false}
       | Noir -> { partie with roque_noir = false,false,false}
@@ -141,7 +137,6 @@ let roque partie type_roque=
       let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
       let partie = deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y) in
       {partie with trait = inverse partie.trait}
-
 
 let terminee partie =
     mat partie (trouver_echec partie) || pat partie
