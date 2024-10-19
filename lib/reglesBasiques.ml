@@ -9,10 +9,10 @@ exception Mouvement_invalide
 let filter_saute_pas echiquier couleur coups_dir =
   let rec filter acc = function
   | [] ->  acc
-  | (x, y) :: t ->
-    begin match echiquier.${x, y} with
-    | Vide -> filter ((x, y) :: acc) t
-    | Piece (c, _) -> if c <> couleur then (x, y) :: acc else acc
+  | h :: t ->
+    begin match echiquier.${h} with
+    | Vide -> filter (h :: acc) t
+    | Piece (c, _) -> if c <> couleur then h :: acc else acc
     end
   in
   List.concat @@ List.map (filter []) coups_dir
@@ -26,7 +26,7 @@ let deplacements_legaux_pion echiquier couleur ((x, _) as dep) =
 
 let deplacements_legaux_cavalier echiquier couleur dep =
   mouv_cav dep
-  |> List.filter (fun (x, y) -> est_vide_ou_adversaire couleur echiquier.${x, y})
+  |> List.filter (fun arr -> est_vide_ou_adversaire couleur echiquier.${arr})
 
 let deplacements_legaux echiquier piece dep =
   match piece with
@@ -59,21 +59,29 @@ let deplacer_piece partie ((x, _) as dep) arr =
   in
   {echiquier; roi_blanc; roi_noir; trait = inverse partie.trait; roque_blanc; roque_noir}
 
-let coups_legaux partie ((x, y) as dep) =
-  match partie.echiquier.${x, y} with
+let coups_legaux partie dep =
+  match partie.echiquier.${dep} with
   | Vide -> []
   | Piece (c, p) ->
     if c <> partie.trait then []
     else
       deplacements_legaux partie.echiquier (c, p) dep
       |> List.filter (fun arr ->
-        let partie = deplacer_piece partie (x, y) arr in
+        let partie = deplacer_piece partie dep arr in
         not @@ est_attaquee partie.echiquier c (Partie.pos_roi partie c))
 
 let est_legal partie dep arr = List.mem arr (coups_legaux partie dep)
 
-let jouer partie dep arr =
-  if est_legal partie dep arr then Some (deplacer_piece partie dep arr)
+let jouer partie dep ((_, y) as arr) =
+  if est_legal partie dep arr then
+    let partie = deplacer_piece partie dep arr in
+    let e = partie.echiquier in
+    begin match e.${arr} with
+    | Piece (Blanc, Pion) -> if y = 7 then e.${arr} <- Piece (Blanc, Dame)
+    | Piece (Noir, Pion) -> if y = 0 then e.${arr} <- Piece (Noir, Dame)
+    | _ -> ()
+    end;
+    Some partie
   else None
 
 
@@ -109,13 +117,9 @@ let pat partie =
 
 let trouver_echec partie= partie.roi_blanc
 
-let print_bool b =
-  if b then print_endline "true" else print_endline "false"
-
 (* Gestion du roque*)
 
 let peut_roquer partie  type_roque=
-  print_bool (peut_roquer_sans_echec partie type_roque);
   if not @@ peut_roquer_sans_echec partie type_roque then false
   else
     let (x,y) = pos_roi partie partie.trait in
