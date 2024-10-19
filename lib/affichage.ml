@@ -26,15 +26,18 @@ let to_algebrique p (x,y) =
   Buffer.contents buf
 
 let from_algebrique str =
-  let len = String.length str in
-  if len <> 2 && len <> 3 then invalid_arg "from_algebrique"
+  if str = "o-o" || str = "O-O" then Petit_roque
+  else if str = "o-o-o" || str = "O-O-O" then Grand_roque
   else
-    let p = if len = 2 then Pion else piece_of_char (Char.uppercase_ascii str.[0]) in
-    let str = String.sub str (len - 2) 2 in
-    let x = int_of_char (Char.lowercase_ascii str.[0]) - 97 in (* 97 est le code ascii de 'a' *)
-    let y = int_of_char str.[1] - 49 in   (* 49 est le code ascii de '1' *)
-    assert (0 <= x && x <= 7 && 0 <= y && y <= 7);
-    p, (x, y)
+    let len = String.length str in
+    if len <> 2 && len <> 3 then invalid_arg "from_algebrique"
+    else
+      let p = if len = 2 then Pion else piece_of_char (Char.uppercase_ascii str.[0]) in
+      let str = String.sub str (len - 2) 2 in
+      let x = int_of_char (Char.lowercase_ascii str.[0]) - 97 in (* 97 est le code ascii de 'a' *)
+      let y = int_of_char str.[1] - 49 in   (* 49 est le code ascii de '1' *)
+      assert (0 <= x && x <= 7 && 0 <= y && y <= 7);
+      Mouvement (p, (x, y))
 
 
 let unicode_of_piece ?(couleur = true) (c, p) =
