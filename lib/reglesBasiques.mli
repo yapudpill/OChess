@@ -14,8 +14,9 @@ coup est légal et renvoie le nouvel état de la partie.
 Si le dépacement n'est pas légal, lève Mouvement_invalide *)
 
 val deplacements_legaux : Echiquier.t -> Piece.t -> int * int -> (int * int) list
-val jouer : Partie.t -> int * int -> int * int -> Partie.t option 
+val jouer : Partie.t -> int * int -> int * int -> Partie.t option
 val parable : Partie.t -> int * int -> bool
 val mat : Partie.t -> int * int -> bool
 val pat : Partie.t -> bool
 val terminee : Partie.t -> bool
+val roque : Partie.t -> int -> Partie.t

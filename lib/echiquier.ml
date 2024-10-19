@@ -3,6 +3,8 @@ open Piece
 type case = Vide | Piece of Piece.t
 type t = case array array
 
+type coup = | Petit_roque | Grand_roque | Mouvement of ptype*(int*int)
+
 (* Initialisation d'un échiquier *)
 let init_pos x y =
   let arriere = function
@@ -31,9 +33,11 @@ let est_adversaire c = function
 | Vide -> false
 | Piece (c', _) -> c <> c'
 
-let est_vide_ou_adversaire c = function
-| Vide -> true
-| Piece (c', _) -> c <> c'
+let est_vide = function
+| Vide -> true | _ -> false
+let est_vide_ou_adversaire c case=
+    est_adversaire c case || est_vide case
+
 
 let contient_case p = function
 | Vide -> false
