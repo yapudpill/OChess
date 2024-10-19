@@ -4,20 +4,11 @@ open Partie
 open ReglesBasiques
 open Piece
 open Echiquier
-
-
-let partie = ref  @@ init_partie ()
+open Fen
 
 exception Mouvement_ambigu
 
-
-
-(*
-let print_coup coup =
-  match coup with
-  | Petit_roque -> print_endline "O-O"
-  | Grand_roque -> print_endline "O-O-O"
-  | Mouvement (p,(x,y)) -> print_char (char_of_piece p); Printf.printf "(%d,%d)\n" x y *)
+let partie = ref @@ creer_partie_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq"
 
 let case_depart_autre partie p pos =
     let cases = deplacements_legaux partie.echiquier (inverse partie.trait,p) pos
@@ -25,7 +16,6 @@ let case_depart_autre partie p pos =
     if List.length cases = 1 then List.nth cases 0
     else if List.length cases > 1 then raise Mouvement_ambigu
     else raise Mouvement_invalide
-
 
 let case_depart_pion partie (x,y) =
   let dy = if partie.trait = Blanc then -1 else 1 in
