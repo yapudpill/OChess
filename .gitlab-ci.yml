@@ -46,8 +46,16 @@ test:
       - _build
     policy: pull
 
+  artifacts:
+    paths:
+      - _coverage
+
+  coverage: '/\(\d+\.\d+%\)/'
+
   script:
     - header_start tests "Executer les tests"
     - eval $(opam env)
-    - dune test -f
+    - dune test --instrument-with bisect_ppx --force
+    - bisect-ppx-report html
+    - bisect-ppx-report summary
     - header_end tests

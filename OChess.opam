@@ -16,6 +16,7 @@ depends: [
   "ocaml"
   "dune" {>= "3.16"}
   "alcotest" {with-test}
+  "bisect_ppx" {with-test}
   "odoc" {with-doc}
 ]
 build: [

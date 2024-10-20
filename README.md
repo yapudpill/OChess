@@ -4,6 +4,7 @@
 
 
 [![pipeline status](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/pipeline.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
+[![coverage report](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/coverage.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
 
 ## Compilation et exécution
 
@@ -20,5 +21,25 @@ opam switch create --deps-only --with-test --with-doc . 5.2.0
 eval $(opam env)
 ```
 
-Une fois les dépendances installées, le jeu peut être compilé avec `dune build`,
-exécuté avec `dune exec OChess` testé avec `dune test`.
+Une fois les dépendances installées, le jeu peut être compilé avec `dune build`
+et exécuté avec `dune exec OChess`.
+
+## Tests et couverture
+
+Ce projet utilise Alcotest pour gérer les tests unitaires et bisect_ppx pour
+générer les rapports de couverture.
+
+Les tests simples peuvent être exécutés avec `dune test`.
+
+Afin de générer un rapport de couverture, utilisez les commandes suivantes :
+
+```bash
+# Exécution de tous les tests avec génération des artefacts pour bisect_ppx
+dune test --instrument-with bisect_ppx --force
+
+# Générer un rapport html dans le dossier _coverage
+bisect-ppx-report html
+
+# Afficher un résumé dans le terminal
+bisect-ppx-report summary
+```

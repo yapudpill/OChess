@@ -20,7 +20,8 @@
  (depends
     ocaml
     dune
-    (alcotest :with-test))
+    (alcotest :with-test)
+    (bisect_ppx :with-test))
  (tags (echecs)))
 
 ; See the complete stanza docs at https://dune.readthedocs.io/en/stable/reference/dune-project/index.html
