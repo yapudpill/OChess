@@ -26,6 +26,7 @@ build:
       if [ ! -d _opam ]; then
         echo "Pas de dossier _opam, création d'un switch"
         header_start init_env "Création du switch opam"
+        opam update
         opam switch create --yes --deps-only --with-test --with-doc . 5.2.0
         header_end init_env
       fi
