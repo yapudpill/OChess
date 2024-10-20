@@ -6,12 +6,9 @@ type t = couleur * ptype
 (** Inverse la couleur passée en entrée *)
 val inverse : couleur -> couleur
 
-val sur_echiquier : int * int -> bool
-
 (* Mouvement non dirigé :
 Les fonctions de la forme mouv_<piece> renvoient la liste des cases atteignables
-en un déplacement à partir de la case de départ donnée.
-*)
+en un déplacement à partir de la case de départ donnée. *)
 val mouv_roi : int * int -> (int * int) list
 val mouv_cav : int * int -> (int * int) list
 val mouv_pion : couleur -> int * int -> (int * int) list
@@ -19,7 +16,6 @@ val mouv_fou : int * int -> (int * int) list
 val mouv_tour : int * int -> (int * int) list
 val mouv_dame : int * int -> (int * int) list
 val mouvement : t -> int * int -> (int * int) list
-
 
 (* Mouvement dirigé :
 Les fonctions de la forme mouv_<piece>_dir renvoient la liste des cases
