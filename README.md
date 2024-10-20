@@ -2,6 +2,9 @@
 
 *Un jeu d'échecs dans le terminal par Marc Robin et Anthony Fernandes*
 
+
+[![pipeline status](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/pipeline.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
+
 ## Compilation et exécution
 
 Ce jeu nécessite le package manager d'ocaml, [opam](https://opam.ocaml.org).
