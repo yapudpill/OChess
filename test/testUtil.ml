@@ -1,11 +1,17 @@
-open Alcotest
-
 open OChess
 open Piece
 
-let mouv_list = slist (pair int int) compare
+let mouv_list = Alcotest.(slist (pair int int) compare)
 
-let nom_piece = function
+let mouv_list_list = Alcotest.slist mouv_list compare
+
+let string_of_couleur = function
+| Blanc -> "Blanc"
+| Noir -> "Noir"
+
+let couleur = Alcotest.of_pp (Fmt.of_to_string string_of_couleur)
+
+let string_of_piece = function
 | (Blanc, Pion) -> "Pion blanc"
 | (Blanc, Cavalier) -> "Cavalier blanc"
 | (Blanc, Fou) -> "Fou blanc"
