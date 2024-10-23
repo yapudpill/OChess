@@ -19,4 +19,5 @@ val parable : Partie.t -> int * int -> bool
 val mat : Partie.t -> int * int -> bool
 val pat : Partie.t -> bool
 val terminee : Partie.t -> bool
+val peut_roquer : Partie.t -> int -> bool
 val roque : Partie.t -> int -> Partie.t

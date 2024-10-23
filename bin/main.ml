@@ -1,5 +1,5 @@
 open OChess
-open Affichage
+ open Affichage
 open Partie
 open ReglesBasiques
 open Piece
@@ -8,7 +8,7 @@ open Fen
 
 exception Mouvement_ambigu
 
-let partie = ref @@ creer_partie_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq"
+let partie = ref @@ creer_partie_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w -"
 
 let case_depart_autre partie p pos =
     let cases = deplacements_legaux partie.echiquier (inverse partie.trait,p) pos
@@ -41,8 +41,6 @@ let case_depart partie p pos =
 
 let parse_coup partie p arr =
   case_depart partie p arr
-
-
 
 let () =
   while not (ReglesBasiques.terminee !partie) do

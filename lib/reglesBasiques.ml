@@ -88,7 +88,7 @@ let jouer partie dep ((_, y) as arr) =
 (* Gestion du mat pat*)
 
 let parable partie (x',y') =
-    let x,y = (match partie.trait with |Blanc -> partie.roi_blanc | _ -> partie.roi_noir) in
+    let x,y = pos_roi partie partie.trait in
     let dx = (if x'-x = 0 then 0 else if x'-x < 0 then -1 else 1) in
     let dy = (if y'-y = 0 then 0 else if y'-y < 0 then -1 else 1) in
     let rec aux k =
@@ -100,27 +100,28 @@ let parable partie (x',y') =
           aux (k+1)
     in aux 1
 
-let mat partie pos' =
-    let pos_roi = (match partie.trait with |Blanc -> partie.roi_blanc | _ -> partie.roi_noir) in
-    est_attaquee partie.echiquier (inverse partie.trait) pos_roi
-    && mouvement (partie.trait,Roi) pos_roi |> List.is_empty
-    && not @@ parable partie pos'
+let mat partie pos =
+  let roi = pos_roi partie partie.trait in
+    est_attaquee partie.echiquier (inverse partie.trait) roi
+    && coups_legaux partie roi |> List.is_empty
+    && not @@ parable partie pos
 
 let pat partie =
+  let roi = pos_roi partie partie.trait in
     let ref = ref true in
     for x = 0 to 7 do
       for y = 0 to 7 do
         ref := !ref && coups_legaux partie (x,y) = []
       done
     done;
-    !ref
+    !ref &&  not @@ est_attaquee partie.echiquier partie.trait roi
 
-let trouver_echec partie= partie.roi_blanc
+let trouver_echec partie = partie.roi_blanc
 
 (* Gestion du roque*)
 
 let peut_roquer partie  type_roque=
-  if not @@ peut_roquer_sans_echec partie type_roque then false
+  if not @@ peut_roquer_sans_echec partie type_roque  || est_attaquee partie.echiquier partie.trait (pos_roi partie partie.trait) then false
   else
     let (x,y) = pos_roi partie partie.trait in
     not @@ est_attaquee partie.echiquier partie.trait (x+type_roque,y)
@@ -131,7 +132,6 @@ let peut_roquer partie  type_roque=
 let roque partie type_roque=
     if not @@ peut_roquer partie type_roque then raise Mouvement_invalide
     else
-      print_endline "ici";
       let partie = match partie.trait with
       | Blanc -> { partie with roque_blanc = false,false,false}
       | Noir -> { partie with roque_noir = false,false,false}

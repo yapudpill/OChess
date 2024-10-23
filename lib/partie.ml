@@ -20,7 +20,6 @@ let pos_roi partie = function
 | Piece.Blanc -> partie.roi_blanc
 | Piece.Noir -> partie.roi_noir
 
-
 let peut_roquer_sans_echec partie type_roque =
   let tg,r,td = match partie.trait with | Blanc -> partie.roque_blanc | _ -> partie.roque_noir
   in if type_roque = 1 then r&&td else tg&&r
