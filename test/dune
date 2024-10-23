@@ -1,3 +1,3 @@
 (tests
- (names testPiece)
+ (names testPiece testAffichage testAlgebrique)
  (libraries alcotest OChess))

@@ -46,13 +46,14 @@ let parse_coup partie p arr =
 
 let () =
   while not (ReglesBasiques.terminee !partie) do
-    let () = print_string @@ string_of_echiquier ~couleur:false (!partie).echiquier in
+    let () = print_echiquier ~couleur:false (!partie).echiquier in
     let coup = read_line () in
     partie :=
-    match from_algebrique coup with
-    | Petit_roque -> roque !partie 1
-    | Grand_roque -> roque !partie (-1)
-    | Mouvement (p,arr) -> (let dep = parse_coup !partie p arr in
+    match Algebrique.from_algebrique coup with
+    | None -> print_endline "Ce coup est invalide"; !partie
+    | Some Petit_roque -> roque !partie 1
+    | Some Grand_roque -> roque !partie (-1)
+    | Some (Mouvement (p,arr)) -> (let dep = parse_coup !partie p arr in
         match jouer !partie dep arr with
         | Some p -> p
         | None -> (print_endline "Ce coup est illégal"; !partie))

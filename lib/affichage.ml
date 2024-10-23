@@ -10,34 +10,13 @@ let char_of_piece = function
   | Pion -> 'P'
 
 let piece_of_char = function
-  | 'R' -> Roi
-  | 'D' -> Dame
-  | 'F' -> Fou
-  | 'T' -> Tour
-  | 'C' -> Cavalier
-  | 'P' -> Pion
-  | _ -> invalid_arg "piece_of_char"
-
-let to_algebrique p (x,y) =
-  let buf = Buffer.create 3 in
-  Buffer.add_char buf (char_of_piece p);
-  Buffer.add_char buf (char_of_int (97 + x));  (* 97 est le code ascii de 'a' *)
-  Buffer.add_int8 buf (y+1);
-  Buffer.contents buf
-
-let from_algebrique str =
-  if str = "o-o" || str = "O-O" then Petit_roque
-  else if str = "o-o-o" || str = "O-O-O" then Grand_roque
-  else
-    let len = String.length str in
-    if len <> 2 && len <> 3 then invalid_arg "from_algebrique"
-    else
-      let p = if len = 2 then Pion else piece_of_char (Char.uppercase_ascii str.[0]) in
-      let str = String.sub str (len - 2) 2 in
-      let x = int_of_char (Char.lowercase_ascii str.[0]) - 97 in (* 97 est le code ascii de 'a' *)
-      let y = int_of_char str.[1] - 49 in   (* 49 est le code ascii de '1' *)
-      assert (0 <= x && x <= 7 && 0 <= y && y <= 7);
-      Mouvement (p, (x, y))
+  | 'R' -> Some Roi
+  | 'D' -> Some Dame
+  | 'F' -> Some Fou
+  | 'T' -> Some Tour
+  | 'C' -> Some Cavalier
+  | 'P' -> Some Pion
+  | _ -> None
 
 
 let unicode_of_piece ?(couleur = true) (c, p) =
@@ -72,8 +51,11 @@ let string_of_echiquier ?(couleur = true) e =
         Buffer.add_char buf ' ';
       end;
 
-      if couleur then Buffer.add_string buf fin_col;
     done;
+    if couleur then Buffer.add_string buf fin_col;
     Buffer.add_char buf '\n'
   done;
   Buffer.contents buf
+
+let print_echiquier ?(couleur = true) e =
+  print_endline (string_of_echiquier ~couleur e)

@@ -55,6 +55,7 @@ test:
   script:
     - header_start tests "Executer les tests"
     - eval $(opam env)
+    - dune test -f &> /dev/null
     - dune test --instrument-with bisect_ppx --force
     - bisect-ppx-report html
     - bisect-ppx-report summary
