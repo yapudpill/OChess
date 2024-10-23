@@ -32,8 +32,6 @@ let pat () =
   test_pat "2k4R/8/2K5/8/8/8/8/8 b -" false;
   test_pat "8/8/p2k2n1/Pp6/1P1K4/6r1/8/8 w -" false
 
-
-
 let roque_blanc () =
   test_roque "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - KQkq" 1 false;
   test_roque "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - KQkq" (-1) false;

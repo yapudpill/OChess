@@ -99,9 +99,6 @@ let parable' partie (x',y') =
           aux (k+1)
     in aux 1
 
-
-
-
 let parable partie pos =
   match partie.echiquier.${pos} with
   | Piece (_,Cavalier) -> est_attaquee partie.echiquier (inverse partie.trait) pos
