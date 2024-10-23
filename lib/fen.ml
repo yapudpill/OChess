@@ -49,8 +49,8 @@ let from_fen (fen : string) =
 
 (* Fonction pour convertir les droits de roque depuis le FEN *)
 let roque_of_fen roque_str =
-  let roque_blanc = (String.contains roque_str 'Q', String.contains roque_str 'K' || String.contains roque_str 'Q', String.contains roque_str 'K') in
-  let roque_noir = (String.contains roque_str 'q', String.contains roque_str 'k' || String.contains roque_str 'q', String.contains roque_str 'k') in
+  let roque_blanc = (String.contains roque_str 'Q', String.contains roque_str 'K') in
+  let roque_noir = (String.contains roque_str 'q', String.contains roque_str 'k') in
   (roque_blanc, roque_noir)
 
 (* Fonction principale pour créer une partie à partir d'une FEN *)

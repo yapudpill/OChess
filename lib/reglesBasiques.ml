@@ -49,13 +49,13 @@ let deplacer_piece partie ((x, _) as dep) arr =
   echiquier.${arr} <- echiquier.${dep};
   echiquier.${dep} <- Vide;
 
-  let (tgb, rb, tdb), (tgn, rn, tdn) = partie.roque_blanc, partie.roque_noir in
+  let (tgb,tdb), (tgn,tdn) = partie.roque_blanc, partie.roque_noir in
   let roi_blanc, roi_noir, roque_blanc, roque_noir = match echiquier.${arr} with
-  | Piece (Blanc, Roi) -> arr, partie.roi_noir, (tgb, false, tdb), (tgn, rn, tdn)
-  | Piece (Noir, Roi)  -> partie.roi_blanc, arr, (tgb, rb, tdb), (tgn, false, tdn)
-  | Piece (Blanc, Tour) -> let tgb, tdb = (x = 0 || tgb, x = 7 || tdb) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  | Piece (Noir, Tour)  -> let tgn, tdn = (x = 0 || tgn, x = 7 || tdn) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  | _ -> partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
+  | Piece (Blanc, Roi) -> arr, partie.roi_noir, (false,false), (tgn,tdn)
+  | Piece (Noir, Roi)  -> partie.roi_blanc, arr, (tgb,tdb), (false,false)
+  | Piece (Blanc, Tour) -> partie.roi_blanc, partie.roi_noir, ( x <> 0 && tgb, x<>0 && tdb), (tgn,tdn)
+  | Piece (Noir, Tour)  -> partie.roi_blanc, partie.roi_noir, (tgb,tdb), ( x <> 0 && tgn, x<>0 && tdn)
+  | _ -> partie.roi_blanc, partie.roi_noir, (tgb,tdb), (tgn,tdn)
   in
   {echiquier; roi_blanc; roi_noir; trait = inverse partie.trait; roque_blanc; roque_noir}
 
@@ -86,8 +86,7 @@ let jouer partie dep ((_, y) as arr) =
 
 
 (* Gestion du mat pat*)
-
-let parable partie (x',y') =
+let parable' partie (x',y') =
     let x,y = pos_roi partie partie.trait in
     let dx = (if x'-x = 0 then 0 else if x'-x < 0 then -1 else 1) in
     let dy = (if y'-y = 0 then 0 else if y'-y < 0 then -1 else 1) in
@@ -99,6 +98,17 @@ let parable partie (x',y') =
       if est_attaquee partie.echiquier (inverse partie.trait) (x + k*dx, y + k*dy) then true else
           aux (k+1)
     in aux 1
+
+
+
+
+let parable partie pos =
+  match partie.echiquier.${pos} with
+  | Piece (_,Cavalier) -> est_attaquee partie.echiquier (inverse partie.trait) pos
+  | Piece (_,Pion) | Vide-> failwith ("chiant / va te faire voir")
+  | _ -> parable' partie pos
+
+
 
 let mat partie pos =
   let roi = pos_roi partie partie.trait in
@@ -120,21 +130,21 @@ let trouver_echec partie = partie.roi_blanc
 
 (* Gestion du roque*)
 
-let peut_roquer partie  type_roque=
+let peut_roquer partie  type_roque =
   if not @@ peut_roquer_sans_echec partie type_roque  || est_attaquee partie.echiquier partie.trait (pos_roi partie partie.trait) then false
   else
     let (x,y) = pos_roi partie partie.trait in
-    not @@ est_attaquee partie.echiquier partie.trait (x+type_roque,y)
-    && est_vide partie.echiquier.${(x+type_roque,y)}
+    not @@ est_attaquee partie.echiquier partie.trait (x+ type_roque,y)
     && not @@ est_attaquee partie.echiquier partie.trait (x+2*type_roque,y)
+    && est_vide partie.echiquier.${(x+type_roque,y)}
     && est_vide partie.echiquier.${(x+2*type_roque,y)}
 
 let roque partie type_roque=
     if not @@ peut_roquer partie type_roque then raise Mouvement_invalide
     else
       let partie = match partie.trait with
-      | Blanc -> { partie with roque_blanc = false,false,false}
-      | Noir -> { partie with roque_noir = false,false,false}
+      | Blanc -> { partie with roque_blanc = false,false}
+      | Noir -> { partie with roque_noir = false,false}
       in
       let x_tour = (if type_roque = 1 then 7 else 0) in
       let (x,y) = pos_roi partie partie.trait in

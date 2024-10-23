@@ -1,5 +1,4 @@
 open Piece
-open Echiquier
 
 let char_of_piece = function
   | Roi -> 'R'
@@ -33,6 +32,7 @@ let unicode_of_piece ?(couleur = true) (c, p) =
 
 
 let string_of_echiquier ?(couleur = true) e =
+  let open Echiquier in
   let bg_cols = [| "\027[44m"; "\027[106m" |] in (* [| bleu foncé; bleu clair |]*)
   let fg_col c = match c with Blanc -> "\027[97m" | Noir -> "\027[30m" in
   let fin_col ="\027[0m" in
