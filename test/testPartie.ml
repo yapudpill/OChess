@@ -5,7 +5,7 @@ let test_peut_roquer_sans_echec fen type_roque attendu =
 
 let test_pos_roi fen attendu =
   let partie = Fen.creer_partie_fen fen in
-  Alcotest.(check @@ pair int int) fen attendu (Partie.pos_roi partie partie.trait)
+  Alcotest.(check @@ pair int int) fen attendu (Partie.get_pos_roi partie partie.trait)
 
 
 let roque_blanc () =

@@ -43,4 +43,4 @@ let contient_case p = function
 | Vide -> false
 | Piece p' -> p' = p
 
-let contient p echiquier (x, y) = contient_case p echiquier.${x, y}
+let contient echiquier p (x, y) = contient_case p echiquier.${x, y}

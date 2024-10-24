@@ -13,5 +13,5 @@ val (.${}<-) : t -> int * int -> case -> unit
 
 val est_adversaire : Piece.couleur -> case -> bool
 val est_vide_ou_adversaire : Piece.couleur -> case -> bool
-val contient : Piece.t -> t -> int * int -> bool
+val contient : t -> Piece.t -> int * int -> bool
 val est_vide : case -> bool
