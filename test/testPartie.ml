@@ -1,12 +1,12 @@
 open OChess
 
+
 let test_peut_roquer_sans_echec fen type_roque attendu =
   Alcotest.(check bool) fen attendu (Partie.peut_roquer_sans_echec (Fen.creer_partie_fen fen) type_roque)
 
 let test_pos_roi fen attendu =
   let partie = Fen.creer_partie_fen fen in
   Alcotest.(check @@ pair int int) fen attendu (Partie.get_pos_roi partie partie.trait)
-
 
 let roque_blanc () =
   test_peut_roquer_sans_echec "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R w KQkq" 1 true;
