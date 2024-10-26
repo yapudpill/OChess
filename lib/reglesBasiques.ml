@@ -4,7 +4,7 @@ open Partie
 
 exception Mouvement_invalide
 
-(* Gestion des sauts et mouvements spéciaux (pion et cavalier) *)
+(*** Gestion des sauts et mouvements spéciaux (pion et cavalier) ***)
 
 let filter_saute_pas echiquier couleur coups_dir =
   let rec filter acc = function
@@ -15,49 +15,57 @@ let filter_saute_pas echiquier couleur coups_dir =
     | Piece (c, _) -> if c <> couleur then h :: acc else acc
     end
   in
-  List.concat @@ List.map (filter []) coups_dir
+  List.map (filter []) coups_dir
 
 let deplacements_legaux_pion echiquier couleur ((x, _) as dep) =
-  mouv_pion couleur dep
-  |> List.filter (fun (x', y') ->
+  mouv_pion_dir couleur dep
+  |> List.map @@ List.filter (fun (x', y') ->
       match echiquier.${x', y'} with
       | Vide -> x = x'
       | Piece (c, _) -> x <> x' && c <> couleur)
 
 let deplacements_legaux_cavalier echiquier couleur dep =
-  mouv_cav dep
-  |> List.filter (fun arr -> est_vide_ou_adversaire couleur echiquier.${arr})
+  mouv_cav_dir dep
+  |> List.map @@ List.filter (fun arr -> est_vide_ou_adversaire couleur echiquier.${arr})
 
-let deplacements_legaux echiquier piece dep =
+let deplacements_legaux_dir echiquier piece dep =
   match piece with
   | (c, Pion) -> deplacements_legaux_pion echiquier c dep
   | (c, Cavalier) -> deplacements_legaux_cavalier echiquier c dep
   | (c, p) -> filter_saute_pas echiquier c (mouvement_dir (c, p) dep)
 
-(* Gestions des échecs *)
-let est_attaquee echiquier couleur pos =
-  [ Roi; Dame; Fou; Tour; Cavalier; Pion ]
-  |> List.exists (fun p ->
-      let deps = deplacements_legaux echiquier (couleur, p) pos in
-      List.exists (fun (x, y) -> contient (inverse couleur, p) echiquier (x, y)) deps
-      )
+let deplacements_legaux echiquier piece dep =
+  List.concat (deplacements_legaux_dir echiquier piece dep)
 
-(* Obtention des coups légaux *)
+
+
+(*** Gestions des échecs ***)
+
+(** [couleur] correspond à la couleur défendant la case [pos]. *)
+let attaquee_dir echiquier couleur pos =
+  List.concat_map (fun p ->
+    deplacements_legaux_dir echiquier (couleur, p) pos
+    |> List.filter (List.exists (contient echiquier (inverse couleur, p)))
+  ) [ Roi; Dame; Fou; Tour; Cavalier; Pion ]
+
+(** [couleur] correspond à la couleur défendant la case [pos]. *)
+let est_attaquee echiquier couleur pos = attaquee_dir echiquier couleur pos <> []
+
+
+
+(*** Obtention des coups légaux ***)
 
 let deplacer_piece partie ((x, _) as dep) arr =
   let echiquier = Array.map Array.copy partie.echiquier in
   echiquier.${arr} <- echiquier.${dep};
   echiquier.${dep} <- Vide;
 
-  let (tgb, rb, tdb), (tgn, rn, tdn) = partie.roque_blanc, partie.roque_noir in
-  let roi_blanc, roi_noir, roque_blanc, roque_noir = match echiquier.${arr} with
-  | Piece (Blanc, Roi) -> arr, partie.roi_noir, (tgb, false, tdb), (tgn, rn, tdn)
-  | Piece (Noir, Roi)  -> partie.roi_blanc, arr, (tgb, rb, tdb), (tgn, false, tdn)
-  | Piece (Blanc, Tour) -> let tgb, tdb = (x = 0 || tgb, x = 7 || tdb) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  | Piece (Noir, Tour)  -> let tgn, tdn = (x = 0 || tgn, x = 7 || tdn) in partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  | _ -> partie.roi_blanc, partie.roi_noir, (tgb, rb, tdb), (tgn, rn, tdn)
-  in
-  {echiquier; roi_blanc; roi_noir; trait = inverse partie.trait; roque_blanc; roque_noir}
+  let (g, d) = get_roque partie partie.trait in
+  let partie = match echiquier.${arr} with
+  | Piece (_, Roi) -> set_pos_roi partie.trait arr partie
+  | Piece (_, Tour) -> set_roque partie.trait (x <> 0 && g, x <> 7 && d) partie
+  | _ -> partie
+  in { partie with echiquier; trait = inverse partie.trait }
 
 let coups_legaux partie dep =
   match partie.echiquier.${dep} with
@@ -68,79 +76,107 @@ let coups_legaux partie dep =
       deplacements_legaux partie.echiquier (c, p) dep
       |> List.filter (fun arr ->
         let partie = deplacer_piece partie dep arr in
-        not @@ est_attaquee partie.echiquier c (Partie.pos_roi partie c))
+        not @@ est_attaquee partie.echiquier c (get_pos_roi partie c))
 
 let est_legal partie dep arr = List.mem arr (coups_legaux partie dep)
+
+
+
+(*** Gestion du roque ***)
+
+let peut_roquer partie  type_roque =
+  if not @@ peut_roquer_sans_echec partie type_roque || est_attaquee partie.echiquier partie.trait (get_pos_roi partie partie.trait) then false
+  else
+    let (x,y) = get_pos_roi partie partie.trait in
+    not @@ est_attaquee partie.echiquier partie.trait (x + type_roque, y)
+    && not @@ est_attaquee partie.echiquier partie.trait (x+2*type_roque,y)
+    && est_vide partie.echiquier.${(x+type_roque,y)}
+    && est_vide partie.echiquier.${(x+2*type_roque,y)}
+
+let roque partie type_roque=
+  if not @@ peut_roquer partie type_roque then None
+  else
+    let x_tour = (if type_roque = 1 then 7 else 0) in
+    let (x,y) = get_pos_roi partie partie.trait in
+    let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
+    let partie = {partie with trait = inverse partie.trait} in
+    Some (deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y))
+
+
+
+(*** Recherche de la case de départ ***)
+
+let case_depart_autre partie p pos =
+  deplacements_legaux partie.echiquier (inverse partie.trait, p) pos
+  |> List.filter (contient partie.echiquier (partie.trait, p))
+
+let case_depart_pion partie (x,y) =
+  if est_adversaire partie.trait partie.echiquier.${x,y} then
+    case_depart_autre partie Pion (x, y)
+  else
+    match partie.trait with
+    | Blanc ->
+      if y > 0 && contient partie.echiquier (partie.trait, Pion) (x, y-1) then [(x, y-1)]
+      else if y = 3 && contient partie.echiquier (partie.trait, Pion) (x, y-2) then [(x, y-2)]
+      else []
+    | Noir ->
+      if y < 7 && contient partie.echiquier (partie.trait, Pion) (x, y+1) then [(x, y+1)]
+      else if y = 4 && contient partie.echiquier (partie.trait, Pion) (x, y+2) then [(x, y+2)]
+      else []
+
+let case_depart partie p arr =
+  let potentiels = match p with
+  | Pion -> case_depart_pion partie arr
+  | _ -> case_depart_autre partie p arr in
+  List.filter (fun dep ->
+    let partie = deplacer_piece partie dep arr in
+    not @@ est_attaquee partie.echiquier partie.trait (get_pos_roi partie partie.trait)
+  ) potentiels
+
+
+
+(*** Jouer un coup ***)
 
 let jouer partie dep ((_, y) as arr) =
   if est_legal partie dep arr then
     let partie = deplacer_piece partie dep arr in
-    let e = partie.echiquier in
-    begin match e.${arr} with
-    | Piece (Blanc, Pion) -> if y = 7 then e.${arr} <- Piece (Blanc, Dame)
-    | Piece (Noir, Pion) -> if y = 0 then e.${arr} <- Piece (Noir, Dame)
+    (* Promotion *)
+    begin match partie.echiquier.${arr} with
+    | Piece (Blanc, Pion) -> if y = 7 then partie.echiquier.${arr} <- Piece (Blanc, Dame)
+    | Piece (Noir, Pion) -> if y = 0 then partie.echiquier.${arr} <- Piece (Noir, Dame)
     | _ -> ()
     end;
     Some partie
   else None
 
 
-(* Gestion du mat pat*)
 
-let parable partie (x',y') =
-    let x,y = (match partie.trait with |Blanc -> partie.roi_blanc | _ -> partie.roi_noir) in
-    let dx = (if x'-x = 0 then 0 else if x'-x < 0 then -1 else 1) in
-    let dy = (if y'-y = 0 then 0 else if y'-y < 0 then -1 else 1) in
-    let rec aux k =
-      if  (dx = 1 && dy = 1) && (x + k*dx > x' || y + k*dy > y') then false else
-      if  (dx = 1 && dy = -1) && (x + k*dx > x' || y + k*dy < y') then false else
-      if  (dx = -1 && dy = 1) && (x + k*dx < x' || y + k*dy > y') then false else
-      if  (dx = -1 && dy = -1 && x + k*dx < x' || y + k*dy < y') then false else
-      if est_attaquee partie.echiquier (inverse partie.trait) (x + k*dx, y + k*dy) then true else
-          aux (k+1)
-    in aux 1
-
-let mat partie pos' =
-    let pos_roi = (match partie.trait with |Blanc -> partie.roi_blanc | _ -> partie.roi_noir) in
-    est_attaquee partie.echiquier (inverse partie.trait) pos_roi
-    && mouvement (partie.trait,Roi) pos_roi |> List.is_empty
-    && not @@ parable partie pos'
+(*** Fin de partie ***)
 
 let pat partie =
-    let ref = ref true in
+  not (est_attaquee partie.echiquier partie.trait (get_pos_roi partie partie.trait)) &&
+  let pat = ref true in
+  for x = 0 to 7 do
+    for y = 0 to 7 do
+      pat := !pat && coups_legaux partie (x,y) = []
+    done
+  done;
+  !pat
+
+let mat partie =
+  let roi = get_pos_roi partie partie.trait in
+  let a_defendre = attaquee_dir partie.echiquier partie.trait roi in
+  match a_defendre with
+  | [] -> false
+  | _ :: _ :: _ -> coups_legaux partie roi = []
+  | [ dir ] ->
+    coups_legaux partie roi = [] &&
+    let mat = ref true in
     for x = 0 to 7 do
       for y = 0 to 7 do
-        ref := !ref && coups_legaux partie (x,y) = []
+        mat := !mat && not @@ List.exists (fun x -> List.mem x dir) (coups_legaux partie (x,y))
       done
     done;
-    !ref
+    !mat
 
-let trouver_echec partie= partie.roi_blanc
-
-(* Gestion du roque*)
-
-let peut_roquer partie  type_roque=
-  if not @@ peut_roquer_sans_echec partie type_roque then false
-  else
-    let (x,y) = pos_roi partie partie.trait in
-    not @@ est_attaquee partie.echiquier partie.trait (x+type_roque,y)
-    && est_vide partie.echiquier.${(x+type_roque,y)}
-    && not @@ est_attaquee partie.echiquier partie.trait (x+2*type_roque,y)
-    && est_vide partie.echiquier.${(x+2*type_roque,y)}
-
-let roque partie type_roque=
-    if not @@ peut_roquer partie type_roque then raise Mouvement_invalide
-    else
-      print_endline "ici";
-      let partie = match partie.trait with
-      | Blanc -> { partie with roque_blanc = false,false,false}
-      | Noir -> { partie with roque_noir = false,false,false}
-      in
-      let x_tour = (if type_roque = 1 then 7 else 0) in
-      let (x,y) = pos_roi partie partie.trait in
-      let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
-      let partie = deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y) in
-      {partie with trait = inverse partie.trait}
-
-let terminee partie =
-    mat partie (trouver_echec partie) || pat partie
+let terminee partie = pat partie || mat partie

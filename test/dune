@@ -1,1 +1,10 @@
-
+(tests
+ (names
+  testPiece
+  testAffichage
+  testAlgebrique
+  testRegles
+  testPartie
+  testEchiquier
+  testFen)
+ (libraries alcotest OChess))
