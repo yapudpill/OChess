@@ -94,13 +94,13 @@ let peut_roquer partie  type_roque =
     && est_vide partie.echiquier.${(x+2*type_roque,y)}
 
 let roque partie type_roque=
-  if not @@ peut_roquer partie type_roque then raise Mouvement_invalide
+  if not @@ peut_roquer partie type_roque then None
   else
     let x_tour = (if type_roque = 1 then 7 else 0) in
     let (x,y) = get_pos_roi partie partie.trait in
     let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
     let partie = {partie with trait = inverse partie.trait} in
-    deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y)
+    Some (deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y))
 
 
 

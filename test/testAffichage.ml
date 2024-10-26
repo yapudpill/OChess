@@ -2,7 +2,7 @@ open OChess
 open Affichage
 
 (*** Test d'affichage (cf testAffichage.expected) ***)
-let e = Echiquier.init_echiquier ()
+let e = Fen.from_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R"
 
 let () =
   print_endline "~~~ Affichage sans couleurs ~~~\n";

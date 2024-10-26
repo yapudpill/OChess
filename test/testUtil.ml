@@ -35,6 +35,10 @@ let string_of_coup = function
 | Petit_roque -> "Petit roque"
 | Mouvement (p, (x, y)) -> Printf.sprintf "%s (%d, %d)" (string_of_ptype p) x y
 
+let string_of_case = function
+| Vide -> "Vide"
+| Piece p -> string_of_piece p
+
 
 (*** Testables ***)
 let mouv_list = Alcotest.(slist (pair int int) compare)
@@ -42,3 +46,4 @@ let mouv_list_list = Alcotest.slist mouv_list compare
 let couleur = Alcotest.of_pp (Fmt.of_to_string string_of_couleur)
 let ptype = Alcotest.of_pp (Fmt.of_to_string string_of_ptype)
 let coup = Alcotest.of_pp (Fmt.of_to_string string_of_coup)
+let case = Alcotest.of_pp (Fmt.of_to_string string_of_case)

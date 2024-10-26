@@ -4,7 +4,7 @@ val est_attaquee : Echiquier.t -> Piece.couleur -> int * int -> bool
 val coups_legaux : Partie.t -> int * int -> (int * int) list
 val est_legal : Partie.t -> int * int -> int * int -> bool
 val peut_roquer : Partie.t -> int -> bool
-val roque : Partie.t -> int -> Partie.t
+val roque : Partie.t -> int -> Partie.t option
 val case_depart : Partie.t -> Piece.ptype -> int * int -> (int * int) list
 val jouer : Partie.t -> int * int -> int * int -> Partie.t option
 val pat : Partie.t -> bool
