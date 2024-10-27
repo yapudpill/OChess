@@ -53,6 +53,11 @@ let roque_of_fen roque_str =
   let roque_noir = (String.contains roque_str 'q', String.contains roque_str 'k') in
   (roque_blanc, roque_noir)
 
+let prise_en_passant pep_string =
+  match pep_string with
+  | "-" -> None
+  | _ -> Some (int_of_char (Char.lowercase_ascii pep_string.[0]) - 97,int_of_char pep_string.[1] - 49)
+
 (* Fonction principale pour créer une partie à partir d'une FEN *)
 let creer_partie_fen fen =
   (* On découpe le FEN en différentes sections *)
