@@ -9,6 +9,9 @@
  ♟  ♟  .  .  .  ♟  ♟  ♟ 
  ♜  ♞  ♝  ♛  ♚  .  .  ♜ 
 
+Trait : Blanc
+Adversaire : Noir
+
 ~~~ Affichage avec couleurs sans argument optionnel ~~~
 
 [106m [30m♜ [44m   [106m [30m♝ [44m [30m♛ [106m [30m♚ [44m   [106m   [44m [30m♜ [0m
@@ -19,6 +22,9 @@
 [44m   [106m   [44m [97m♟ [106m   [44m   [106m [97m♞ [44m   [106m   [0m
 [106m [97m♟ [44m [97m♟ [106m   [44m   [106m   [44m [97m♟ [106m [97m♟ [44m [97m♟ [0m
 [44m [97m♜ [106m [97m♞ [44m [97m♝ [106m [97m♛ [44m [97m♚ [106m   [44m   [106m [97m♜ [0m
+
+Trait : Blanc
+Adversaire : Noir
 
 ~~~ Affichage avec couleurs avec argument optionnel ~~~
 
@@ -31,3 +37,5 @@
 [106m [97m♟ [44m [97m♟ [106m   [44m   [106m   [44m [97m♟ [106m [97m♟ [44m [97m♟ [0m
 [44m [97m♜ [106m [97m♞ [44m [97m♝ [106m [97m♛ [44m [97m♚ [106m   [44m   [106m [97m♜ [0m
 
+Trait : Blanc
+Adversaire : Noir

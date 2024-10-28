@@ -187,7 +187,9 @@ let case_depart_pion () =
   test_case_depart "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 b q -" Pion (7,7) [];
   test_case_depart "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -" Pion (4,2) [(4,1)];
   test_case_depart "8/3N1pkp/4p1p1/3pb3/8/1P3P2/4Q1PP/R4K2 b - -" Pion (3,3) [(3,4)];
-  test_case_depart "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 w q -" Pion (0,0) []
+  test_case_depart "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 w q -" Pion (0,0) [];
+  test_case_depart "8/3N1pkp/4p3/3pb3/5pP1/1P3P2/4Q2P/R4K2 b - g3" Pion (6, 2) [(5,3)];
+  test_case_depart "7k/8/8/1pP5/8/8/8/7K w - b6" Pion (1, 5) [(2, 4)]
 
 let case_depart_autre () =
   test_case_depart "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -" Cavalier (5,2) [(6,0)];
@@ -196,6 +198,7 @@ let case_depart_autre () =
   test_case_depart "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R w K -" Fou (6,4) [(2,0)];
   test_case_depart "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R w - -" Dame (3,5) [(0,2)];
   test_case_depart "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -" Tour ((2,7)) [(0,7)];
+  test_case_depart "2bqkbnr/p2ppppp/R7/1Pp5/8/8/2PPPPP1/1NBQKBNR w Kk c6" Tour ((2,5)) [(0,5)];
   test_case_depart "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -" Roi (4,6) [(4,7)]
 
 let case_depart = [
