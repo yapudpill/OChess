@@ -88,6 +88,7 @@ let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
   echiquier.${arr} <- echiquier.${dep};
   echiquier.${dep} <- Vide;
 
+  (* Prendre en passant *)
   if Option.fold partie.prise_en_passant ~none:false ~some:((=) arr) then begin
     match echiquier.${arr} with
     | Piece (Blanc, Pion) -> echiquier.${x', y' - 1} <- Vide
@@ -95,17 +96,26 @@ let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
     | _ -> ()
   end;
 
+  (* Avance de 2 case *)
+  let prise_en_passant = match echiquier.${arr} with
+    | Piece (Blanc, Pion) -> if y' = y + 2 then Some (x, y+1) else None
+    | Piece (Noir, Pion)  -> if y' = y - 2 then Some (x, y-1) else None
+    | _ -> None
+  in
+
+  (* Promotion *)
+  begin match echiquier.${arr} with
+    | Piece (Blanc, Pion) -> if y' = 7 then echiquier.${arr} <- Piece (Blanc, Dame)
+    | Piece (Noir, Pion) -> if y' = 0 then echiquier.${arr} <- Piece (Noir, Dame)
+    | _ -> ()
+  end;
+
+  (* Roque *)
   let (g, d) = get_roque partie partie.trait in
   let partie = match echiquier.${arr} with
   | Piece (_, Roi) -> set_pos_roi partie.trait arr partie
   | Piece (_, Tour) -> set_roque partie.trait (x <> 0 && g, x <> 7 && d) partie
   | _ -> partie
-  in
-
-  let prise_en_passant = match echiquier.${arr} with
-    | Piece (Blanc, Pion) -> if y' = y + 2 then Some (x, y+1) else None
-    | Piece (Noir, Pion)  -> if y' = y - 2 then Some (x, y-1) else None
-    | _ -> None
   in
 
   { partie with
@@ -167,16 +177,8 @@ let case_depart partie p arr =
 
 (*** Jouer un coup ***)
 
-let jouer partie dep ((_, y) as arr) =
-  if est_legal partie dep arr then
-    let partie = deplacer_piece partie dep arr in
-    (* Promotion *)
-    begin match partie.echiquier.${arr} with
-    | Piece (Blanc, Pion) -> if y = 7 then partie.echiquier.${arr} <- Piece (Blanc, Dame)
-    | Piece (Noir, Pion) -> if y = 0 then partie.echiquier.${arr} <- Piece (Noir, Dame)
-    | _ -> ()
-    end;
-    Some partie
+let jouer partie dep arr =
+  if est_legal partie dep arr then Some (deplacer_piece partie dep arr )
   else None
 
 

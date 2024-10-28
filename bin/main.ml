@@ -34,5 +34,5 @@ let () =
         | None -> print_endline "Ce coup est illégal"; !partie
         )
       )
-    end;
+    end
   done
