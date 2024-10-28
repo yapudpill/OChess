@@ -118,7 +118,6 @@ let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
 
   { partie with
     echiquier;
-    trait = inverse partie.trait;
     prise_en_passant
   }
 
@@ -154,8 +153,8 @@ let roque partie type_roque=
     let x_tour = (if type_roque = 1 then 7 else 0) in
     let (x,y) = get_pos_roi partie partie.trait in
     let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
-    let partie = {partie with trait = inverse partie.trait} in
-    Some (deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y))
+    let partie =  deplacer_piece partie  (x_tour,y) (x+ 2*type_roque -type_roque,y)in
+    Some {partie with trait = inverse partie.trait}
 
 
 
@@ -166,9 +165,8 @@ let case_depart partie p arr =
   | Pion -> case_depart_pion partie arr
   | _ -> case_depart_autre partie p arr in
   List.filter (fun dep ->
-    let c = partie.trait in
     let partie = deplacer_piece partie dep arr in
-    not @@ est_attaquee partie c (get_pos_roi partie c)
+    not @@ est_attaquee partie partie.trait (get_pos_roi partie partie.trait)
   ) potentiels
 
 
@@ -176,7 +174,9 @@ let case_depart partie p arr =
 (*** Jouer un coup ***)
 
 let jouer partie dep arr =
-  if est_legal partie dep arr then Some (deplacer_piece partie dep arr )
+  if est_legal partie dep arr then
+    let partie = deplacer_piece partie dep arr in
+    Some {partie with trait = inverse partie.trait}
   else None
 
 
