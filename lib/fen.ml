@@ -74,4 +74,5 @@ let creer_partie_fen fen =
       roi_noir;
       roque_blanc;
       roque_noir;
+      prise_en_passant = prise_en_passant @@ List.nth parts 3
     }

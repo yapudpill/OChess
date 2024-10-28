@@ -65,18 +65,10 @@ let case_depart_autre partie p pos =
 
 
 let case_depart_pion partie (x,y) =
-  if Option.value partie.prise_en_passant ~default:(-1,-1) = (x,y) then
-    let () = print_endline "On est sur la case de prise en passant" in
-    let l = mouvement (inverse partie.trait,Pion) (x,y)
-    |> List.filter (contient partie.echiquier (partie.trait, Pion)) in
-    let () = Debug.print_liste_pos l in
-    l
-
-  else if est_adversaire partie.trait partie.echiquier.${x,y} then
-    let () = print_endline "On fou quoi ici" in
+  if Option.fold partie.prise_en_passant ~none:false ~some:((=) (x, y))
+    || est_adversaire partie.trait partie.echiquier.${x,y} then
     case_depart_autre partie Pion (x, y)
   else
-    let () = print_endline "On fou quoi ici" in
     match partie.trait with
     | Blanc ->
       if y > 0 && contient partie.echiquier (partie.trait, Pion) (x, y-1) then [(x, y-1)]
@@ -91,25 +83,36 @@ let case_depart_pion partie (x,y) =
 
 (*** Obtention des coups légaux ***)
 
-let maj_prise_en_passant partie dep (x,y) =
-  if not @@ contient partie.echiquier (partie.trait,Pion) dep then None
-  else
-    let dy = if partie.trait = Blanc then -1 else 1 in
-    let _,y' = List.nth (case_depart_pion partie (x,y)) 0 in
-    if Int.abs (y-y') = 2 && (contient partie.echiquier (inverse partie.trait,Pion) (x+1,y) || contient partie.echiquier (inverse partie.trait,Pion) (x-1,y))
-      then Some (x,y+dy) else None
-
-let deplacer_piece partie ?(pep = false) ((x, _) as dep) arr  =
+let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
   let echiquier = Array.map Array.copy partie.echiquier in
   echiquier.${arr} <- echiquier.${dep};
   echiquier.${dep} <- Vide;
+
+  if Option.fold partie.prise_en_passant ~none:false ~some:((=) arr) then begin
+    match echiquier.${arr} with
+    | Piece (Blanc, Pion) -> echiquier.${x', y' - 1} <- Vide
+    | Piece (Noir, Pion)  -> echiquier.${x', y' + 1} <- Vide
+    | _ -> ()
+  end;
+
   let (g, d) = get_roque partie partie.trait in
   let partie = match echiquier.${arr} with
   | Piece (_, Roi) -> set_pos_roi partie.trait arr partie
   | Piece (_, Tour) -> set_roque partie.trait (x <> 0 && g, x <> 7 && d) partie
   | _ -> partie
-  in { partie with echiquier; trait = inverse partie.trait;
-      prise_en_passant = if pep then maj_prise_en_passant partie dep arr else partie.prise_en_passant}
+  in
+
+  let prise_en_passant = match echiquier.${arr} with
+    | Piece (Blanc, Pion) -> if y' = y + 2 then Some (x, y+1) else None
+    | Piece (Noir, Pion)  -> if y' = y - 2 then Some (x, y-1) else None
+    | _ -> None
+  in
+
+  { partie with
+    echiquier;
+    trait = inverse partie.trait;
+    prise_en_passant
+  }
 
 let coups_legaux partie dep =
   match partie.echiquier.${dep} with
@@ -155,8 +158,9 @@ let case_depart partie p arr =
   | Pion -> case_depart_pion partie arr
   | _ -> case_depart_autre partie p arr in
   List.filter (fun dep ->
+    let c = partie.trait in
     let partie = deplacer_piece partie dep arr in
-    not @@ est_attaquee partie partie.trait (get_pos_roi partie partie.trait)
+    not @@ est_attaquee partie c (get_pos_roi partie c)
   ) potentiels
 
 
@@ -164,10 +168,8 @@ let case_depart partie p arr =
 (*** Jouer un coup ***)
 
 let jouer partie dep ((_, y) as arr) =
-  let b = est_legal partie dep arr in
-  let () = Debug.print_bool b in
-  if b then
-    let partie = deplacer_piece partie ~pep:true dep arr in
+  if est_legal partie dep arr then
+    let partie = deplacer_piece partie dep arr in
     (* Promotion *)
     begin match partie.echiquier.${arr} with
     | Piece (Blanc, Pion) -> if y = 7 then partie.echiquier.${arr} <- Piece (Blanc, Dame)
