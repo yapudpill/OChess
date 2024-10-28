@@ -1,5 +1,9 @@
 open Piece
 
+let string_of_couleur = function
+| Blanc -> "Blanc"
+| Noir -> "Noir"
+
 let char_of_piece = function
   | Roi -> 'R'
   | Dame -> 'D'

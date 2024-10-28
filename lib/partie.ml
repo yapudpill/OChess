@@ -5,6 +5,7 @@ type t = {
   roi_noir : int * int;
   roque_blanc : bool * bool;
   roque_noir : bool * bool;
+  prise_en_passant : (int*int) option;
 }
 
 let get_pos_roi partie = function
