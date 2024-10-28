@@ -1,5 +1,4 @@
 (executable
- (public_name OChess)
+ (public_name ochess)
  (name main)
- (modules main)
- (libraries OChess))
+ (libraries jeu entreeSortie regles))

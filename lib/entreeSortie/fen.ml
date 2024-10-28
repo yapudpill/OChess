@@ -1,6 +1,5 @@
-open Piece
-open Echiquier
-open Partie
+open Jeu.Piece
+open Jeu.Echiquier
 
 (* Fonction pour convertir un caractère en pièce (ptype, couleur) *)
 let piece_of_char c =
@@ -67,7 +66,7 @@ let creer_partie_fen fen =
   let roi_blanc, roi_noir = trouver_rois echiquier 0 0 (-1, -1) (-1, -1) in
   if roi_blanc = (-1, -1) || roi_noir = (-1, -1) then failwith "FEN invalide"
   else
-    {
+    Jeu.Partie.{
       echiquier;
       trait = if List.nth parts 1 = "w" then Blanc else Noir;
       roi_blanc;

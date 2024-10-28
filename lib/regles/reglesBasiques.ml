@@ -1,8 +1,6 @@
-open Piece
-open Echiquier
-open Partie
-
-exception Mouvement_invalide
+open Jeu.Piece
+open Jeu.Echiquier
+open Jeu.Partie
 
 (*** Gestion des sauts et mouvements spéciaux (pion et cavalier) ***)
 

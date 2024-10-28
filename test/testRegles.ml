@@ -1,6 +1,6 @@
-open OChess
-open Fen
-open ReglesBasiques
+open EntreeSortie.Fen
+open Regles.ReglesBasiques
+open Jeu
 
 open TestUtil
 
@@ -15,20 +15,20 @@ let test_coups_legaux fen (x, y) attendu =
   Alcotest.(check mouv_list) str attendu (coups_legaux p (x, y))
 
 let test_mat fen attendu  =
-  Alcotest.(check bool) ("Mat " ^ fen) attendu (ReglesBasiques.mat @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Mat " ^ fen) attendu (mat @@ creer_partie_fen fen)
 
 let test_pat fen attendu  =
-  Alcotest.(check bool) ("Pat " ^ fen) attendu (ReglesBasiques.pat @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Pat " ^ fen) attendu (pat @@ creer_partie_fen fen)
 
 let test_roque fen type_roque attendu  =
-  Alcotest.(check bool) ("roque " ^ fen) attendu (ReglesBasiques.peut_roquer (creer_partie_fen fen) type_roque)
+  Alcotest.(check bool) ("roque " ^ fen) attendu (peut_roquer (creer_partie_fen fen) type_roque)
 
 let test_case_depart fen p arr attendu =
   let partie = creer_partie_fen fen in
-  Alcotest.check TestUtil.mouv_list ("Départ " ^ fen) attendu (ReglesBasiques.case_depart partie p arr)
+  Alcotest.check TestUtil.mouv_list ("Départ " ^ fen) attendu (case_depart partie p arr)
 
 let test_terminee fen attendu =
-  Alcotest.(check bool) ("Terminée " ^ fen) attendu (ReglesBasiques.terminee @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Terminée " ^ fen) attendu (terminee @@ creer_partie_fen fen)
 
 
 let attaquee_simple () =

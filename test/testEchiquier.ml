@@ -1,5 +1,5 @@
-open OChess
-open Echiquier
+open Jeu.Echiquier
+open EntreeSortie
 
 open TestUtil
 

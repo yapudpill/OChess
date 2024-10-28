@@ -1,8 +1,7 @@
-open OChess
-open Affichage
+open EntreeSortie.Affichage
 
 (*** Test d'affichage (cf testAffichage.expected) ***)
-let p = Fen.creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R w KQkq -"
+let p = EntreeSortie.Fen.creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R w KQkq -"
 
 let () =
   let e = p.echiquier in

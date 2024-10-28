@@ -1,5 +1,4 @@
-open OChess
-open Algebrique
+open EntreeSortie.Algebrique
 
 open TestUtil
 

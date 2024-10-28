@@ -1,4 +1,4 @@
-open OChess
+open EntreeSortie
 
 let test_car_invalide () =
   Alcotest.check_raises "Caractère non valide" (Failure "Caractère non valide")

@@ -1,7 +1,7 @@
-open OChess
-open ReglesBasiques
-open Echiquier
-open Affichage
+open Regles.ReglesBasiques
+open Jeu.Echiquier
+open EntreeSortie
+open EntreeSortie.Affichage
 
 let partie = ref @@ Fen.creer_partie_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 

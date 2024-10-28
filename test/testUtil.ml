@@ -1,6 +1,5 @@
-open OChess
-open Piece
-open Echiquier
+open Jeu.Piece
+open Jeu.Echiquier
 
 (*** Conversion en string ***)
 let string_of_couleur = function
