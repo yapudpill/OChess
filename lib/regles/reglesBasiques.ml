@@ -9,8 +9,8 @@ let filter_saute_pas echiquier couleur coups_dir =
   | [] ->  acc
   | h :: t ->
     begin match echiquier.${h} with
-    | Vide -> filter (h :: acc) t
-    | Piece (c, _) -> if c <> couleur then h :: acc else acc
+    | None -> filter (h :: acc) t
+    | Some (c, _) -> if c <> couleur then h :: acc else acc
     end
   in
   List.map (filter []) coups_dir
@@ -22,8 +22,8 @@ let deplacements_legaux_pion partie couleur ((x, _) as dep) =
   (mouv_pion_dir couleur dep
   |> List.map @@ List.filter (fun (x', y') ->
       match partie.echiquier.${x', y'} with
-      | Vide -> x = x'
-      | Piece (c, _) -> x <> x' && c <> couleur) )
+      | None -> x = x'
+      | Some (c, _) -> x <> x' && c <> couleur) )
 
 let deplacements_legaux_cavalier echiquier couleur dep =
   mouv_cav_dir dep
@@ -84,35 +84,35 @@ let case_depart_pion partie (x,y) =
 let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
   let echiquier = Array.map Array.copy partie.echiquier in
   echiquier.${arr} <- echiquier.${dep};
-  echiquier.${dep} <- Vide;
+  echiquier.${dep} <- None;
 
   (* Prendre en passant *)
   if Option.fold partie.prise_en_passant ~none:false ~some:((=) arr) then begin
     match echiquier.${arr} with
-    | Piece (Blanc, Pion) -> echiquier.${x', y' - 1} <- Vide
-    | Piece (Noir, Pion)  -> echiquier.${x', y' + 1} <- Vide
+    | Some (Blanc, Pion) -> echiquier.${x', y' - 1} <- None
+    | Some (Noir, Pion)  -> echiquier.${x', y' + 1} <- None
     | _ -> ()
   end;
 
   (* Avance de 2 case *)
   let prise_en_passant = match echiquier.${arr} with
-    | Piece (Blanc, Pion) -> if y' = y + 2 then Some (x, y+1) else None
-    | Piece (Noir, Pion)  -> if y' = y - 2 then Some (x, y-1) else None
+    | Some (Blanc, Pion) -> if y' = y + 2 then Some (x, y+1) else None
+    | Some (Noir, Pion)  -> if y' = y - 2 then Some (x, y-1) else None
     | _ -> None
   in
 
   (* Promotion *)
   begin match echiquier.${arr} with
-    | Piece (Blanc, Pion) -> if y' = 7 then echiquier.${arr} <- Piece (Blanc, Dame)
-    | Piece (Noir, Pion) -> if y' = 0 then echiquier.${arr} <- Piece (Noir, Dame)
+    | Some (Blanc, Pion) -> if y' = 7 then echiquier.${arr} <- Some (Blanc, Dame)
+    | Some (Noir, Pion) -> if y' = 0 then echiquier.${arr} <- Some (Noir, Dame)
     | _ -> ()
   end;
 
   (* Roque *)
   let (g, d) = get_roque partie partie.trait in
   let partie = match echiquier.${arr} with
-  | Piece (_, Roi) -> set_pos_roi partie.trait arr partie
-  | Piece (_, Tour) -> set_roque partie.trait (x <> 0 && g, x <> 7 && d) partie
+  | Some (_, Roi) -> set_pos_roi partie.trait arr partie
+  | Some (_, Tour) -> set_roque partie.trait (x <> 0 && g, x <> 7 && d) partie
   | _ -> partie
   in
 
@@ -124,8 +124,8 @@ let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
 
 let coups_legaux partie dep =
   match partie.echiquier.${dep} with
-  | Vide -> []
-  | Piece (c, p) ->
+  | None -> []
+  | Some (c, p) ->
     if c <> partie.trait then []
     else
       deplacements_legaux partie (c, p) dep

@@ -7,14 +7,14 @@ open TestUtil
 let test_set_get () =
   let p = Fen.creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R w - -" in
   let e = p.echiquier in
-  Alcotest.check case "Get vide b3" Vide e.${1, 2};
-  Alcotest.check case "Get blanc f3" (Piece (Blanc, Cavalier)) e.${5, 2};
-  Alcotest.check case "Get noir h7" (Piece (Noir, Pion)) e.${7, 6};
+  Alcotest.check case "Get vide b3" None e.${1, 2};
+  Alcotest.check case "Get blanc f3" (Some (Blanc, Cavalier)) e.${5, 2};
+  Alcotest.check case "Get noir h7" (Some (Noir, Pion)) e.${7, 6};
 
-  e.${2, 3} <- Vide;
-  Alcotest.check case "Set vide c4" Vide e.${2, 3};
-  e.${3, 1} <- Piece (Blanc, Pion);
-  Alcotest.check case "Set blanc d2" (Piece (Blanc, Pion)) e.${3, 1}
+  e.${2, 3} <- None;
+  Alcotest.check case "Set vide c4" None e.${2, 3};
+  e.${3, 1} <- Some (Blanc, Pion);
+  Alcotest.check case "Set blanc d2" (Some (Blanc, Pion)) e.${3, 1}
 
 let test_accesseurs = [
   "(.${}) et (.${}<-)", `Quick, test_set_get

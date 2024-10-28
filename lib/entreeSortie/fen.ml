@@ -14,7 +14,7 @@ let piece_of_char c =
     | 'P' -> Pion
     | _ -> failwith "Caractère non valide"
   in
-  Piece (couleur, ptype)
+  Some (couleur, ptype)
 
 (* Fonction auxiliaire récursive *)
 let rec from_fen_aux fen echiquier x y k =
@@ -35,15 +35,15 @@ let rec from_fen_aux fen echiquier x y k =
 
 (* Fonction principale from_fen *)
 let from_fen fen =
-  let echiquier = Array.init_matrix 8 8 (fun _ _ -> Vide) in
+  let echiquier = Array.init_matrix 8 8 (fun _ _ -> None) in
   from_fen_aux fen echiquier 0 7 0
 
 let rec trouver_rois echiquier x y roi_blanc roi_noir =
   if x = 8 then (roi_blanc, roi_noir)
   else if y = 8 then trouver_rois echiquier (x + 1) 0 roi_blanc roi_noir
   else match echiquier.${x, y} with
-  | Piece (Blanc, Roi) -> trouver_rois echiquier x (y + 1) (x, y) roi_noir
-  | Piece (Noir, Roi) -> trouver_rois echiquier x (y + 1) roi_blanc (x, y)
+  | Some (Blanc, Roi) -> trouver_rois echiquier x (y + 1) (x, y) roi_noir
+  | Some (Noir, Roi) -> trouver_rois echiquier x (y + 1) roi_blanc (x, y)
   | _ -> trouver_rois echiquier x (y + 1) roi_blanc roi_noir
 
 (* Fonction pour convertir les droits de roque depuis le FEN *)

@@ -153,16 +153,16 @@ let petit_roque () =
   let open Echiquier in
   let p = creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -" in
   let p = Option.get @@ roque p 1 in
-  Alcotest.check case "Roi" (Piece (Blanc, Roi)) p.echiquier.${6, 0};
-  Alcotest.check case "Tour" (Piece (Blanc, Tour)) p.echiquier.${5, 0};
+  Alcotest.check case "Roi" (Some (Blanc, Roi)) p.echiquier.${6, 0};
+  Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${5, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let grand_roque () =
   let open Echiquier in
   let p = creer_partie_fen "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
   let p = Option.get @@ roque p (-1) in
-  Alcotest.check case "Roi" (Piece (Blanc, Roi)) p.echiquier.${2, 0};
-  Alcotest.check case "Tour" (Piece (Blanc, Tour)) p.echiquier.${3, 0};
+  Alcotest.check case "Roi" (Some (Blanc, Roi)) p.echiquier.${2, 0};
+  Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${3, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let roque_invalide () =
@@ -213,8 +213,8 @@ let test_jouer_blanc () =
   let p1 = Option.get @@ jouer p (4, 2) (4, 3) in
   let p2 = Option.get @@ jouer p (1, 6) (1, 7) in
   let p3 = jouer p (4, 2) (3, 2) in
-  Alcotest.check case "Coup valide" (Piece (Blanc, Tour)) p1.echiquier.${4, 3};
-  Alcotest.check case "Promotion" (Piece (Blanc, Dame)) p2.echiquier.${1, 7};
+  Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p1.echiquier.${4, 3};
+  Alcotest.check case "Promotion" (Some (Blanc, Dame)) p2.echiquier.${1, 7};
   Alcotest.(check bool) "Invalide" true (p3 = None)
 
 let test_jouer_noir () =
@@ -222,8 +222,8 @@ let test_jouer_noir () =
   let p = creer_partie_fen "8/6k1/8/8/4r3/4R3/1p6/4K3 b - -" in
   let p1 = Option.get @@ jouer p (4, 3) (5, 3) in
   let p2 = Option.get @@ jouer p (1, 1) (1, 0) in
-  Alcotest.check case "Coup valide" (Piece (Noir, Tour)) p1.echiquier.${5, 3};
-  Alcotest.check case "Promotion" (Piece (Noir, Dame)) p2.echiquier.${1, 0}
+  Alcotest.check case "Coup valide" (Some (Noir, Tour)) p1.echiquier.${5, 3};
+  Alcotest.check case "Promotion" (Some (Noir, Dame)) p2.echiquier.${1, 0}
 
 let jouer = [
   "Blancs", `Quick, test_jouer_blanc;

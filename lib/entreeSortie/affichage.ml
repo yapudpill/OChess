@@ -47,8 +47,8 @@ let string_of_echiquier ?(couleur = true) e =
       if couleur then Buffer.add_string buf bg_cols.((l + c) mod 2);
 
       begin match e.${c, l} with
-      | Vide -> Buffer.add_string buf (if couleur then "   " else " . ")
-      | Piece (c, p) ->
+      | None -> Buffer.add_string buf (if couleur then "   " else " . ")
+      | Some (c, p) ->
         Buffer.add_char buf ' ';
         if couleur then Buffer.add_string buf (fg_col c);
         Buffer.add_utf_8_uchar buf (unicode_of_piece ~couleur (c, p));
