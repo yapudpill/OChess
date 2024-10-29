@@ -104,11 +104,31 @@ let coups_legaux partie dep =
     if c <> partie.trait then []
     else
       deplacements_legaux partie (c, p) dep
-      |> List.filter (fun arr ->
-        let partie = deplacer_piece partie dep arr in
-        not @@ echec partie)
+      |> List.filter (fun arr -> not @@ echec (deplacer_piece partie dep arr))
 
 let est_legal partie dep arr = List.mem arr (coups_legaux partie dep)
+
+
+
+(*** Gestion du roque ***)
+
+let peut_roquer partie  type_roque =
+  let (x,y) = get_pos_roi partie partie.trait in
+  peut_roquer_sans_echec partie type_roque
+  && not (echec partie)
+  && est_vide partie.echiquier.${(x + type_roque, y)}
+  && est_vide partie.echiquier.${(x + 2*type_roque, y)}
+  && not @@ est_attaquee partie partie.trait (x + type_roque, y)
+  && not @@ est_attaquee partie partie.trait (x + 2*type_roque, y)
+
+let roque partie type_roque=
+  if peut_roquer partie type_roque then
+    let x_tour = (if type_roque = 1 then 7 else 0) in
+    let (x,y) = get_pos_roi partie partie.trait in
+    let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
+    let partie = deplacer_piece partie (x_tour,y) (x+ 2*type_roque -type_roque,y)in
+    {partie with trait = inverse partie.trait}
+  else failwith "roque"
 
 
 
@@ -134,8 +154,10 @@ let case_depart_pion partie (x,y) =
       else []
 
 let coup_of_algebrique partie = function
-| EntreeSortie.Algebrique.Grand_Roque -> Ok Grand_Roque
-| EntreeSortie.Algebrique.Petit_Roque -> Ok Petit_Roque
+| EntreeSortie.Algebrique.Grand_Roque ->
+  if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
+| EntreeSortie.Algebrique.Petit_Roque ->
+  if peut_roquer partie 1 then Ok Petit_Roque else Error Invalide
 | EntreeSortie.Algebrique.Arrivee (p, arr) ->
   let potentiels = match p with
   | Pion -> case_depart_pion partie arr
@@ -145,28 +167,6 @@ let coup_of_algebrique partie = function
   | [] -> Error Invalide
   | [dep] -> Ok (Mouvement (dep, arr))
   | _ -> Error (Ambigu deps)
-
-
-
-(*** Gestion du roque ***)
-
-let peut_roquer partie  type_roque =
-  let (x,y) = get_pos_roi partie partie.trait in
-  peut_roquer_sans_echec partie type_roque
-  && not (echec partie)
-  && est_vide partie.echiquier.${(x + type_roque, y)}
-  && est_vide partie.echiquier.${(x + 2*type_roque, y)}
-  && not @@ est_attaquee partie partie.trait (x + type_roque, y)
-  && not @@ est_attaquee partie partie.trait (x + 2*type_roque, y)
-
-let roque partie type_roque=
-  if peut_roquer partie type_roque then
-    let x_tour = (if type_roque = 1 then 7 else 0) in
-    let (x,y) = get_pos_roi partie partie.trait in
-    let partie = deplacer_piece partie (x,y) (x+ 2*type_roque,y) in
-    let partie = deplacer_piece partie (x_tour,y) (x+ 2*type_roque -type_roque,y)in
-    {partie with trait = inverse partie.trait}
-  else failwith "roque"
 
 
 

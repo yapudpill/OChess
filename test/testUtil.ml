@@ -1,5 +1,4 @@
 open Jeu.Piece
-open Jeu.Echiquier
 
 (*** Conversion en string ***)
 let string_of_couleur = function
@@ -29,10 +28,26 @@ let string_of_piece = function
 | (Noir, Tour) -> "Tour noire"
 | (Noir, Dame) -> "Dame noire"
 
-let string_of_coup = function
-| Grand_roque -> "Grand roque"
-| Petit_roque -> "Petit roque"
-| Mouvement (p, (x, y)) -> Printf.sprintf "%s (%d, %d)" (string_of_ptype p) x y
+let string_of_algebrique =
+  let open EntreeSortie.Algebrique in
+  function
+  | Grand_Roque -> "Grand roque"
+  | Petit_Roque -> "Petit roque"
+  | Arrivee (p, (x, y)) -> Printf.sprintf "%s (%d, %d)" (string_of_ptype p) x y
+
+let string_of_coup =
+  let open Jeu.Partie in
+  function
+  | Grand_Roque -> "Grand roque"
+  | Petit_Roque -> "Petit roque"
+  | Mouvement ((x, y), (x', y')) -> Printf.sprintf "(%d, %d) -> (%d, %d)" x y x' y'
+
+let string_of_erreur =
+  let open Jeu.Partie in
+  function
+  | Invalide -> "Invalide"
+  | Ambigu l  ->
+    Printf.sprintf "Ambigu : %s" Fmt.((to_to_string @@ Dump.list (Dump.pair int int)) l)
 
 
 (*** Testables ***)
@@ -40,5 +55,7 @@ let mouv_list = Alcotest.(slist (pair int int) compare)
 let mouv_list_list = Alcotest.slist mouv_list compare
 let couleur = Alcotest.of_pp (Fmt.of_to_string string_of_couleur)
 let ptype = Alcotest.of_pp (Fmt.of_to_string string_of_ptype)
-let coup = Alcotest.of_pp (Fmt.of_to_string string_of_coup)
 let case = Alcotest.(option @@ pair couleur ptype)
+let algebrique = Alcotest.of_pp (Fmt.of_to_string string_of_algebrique)
+let coup = Alcotest.of_pp (Fmt.of_to_string string_of_coup)
+let erreur = Alcotest.of_pp (Fmt.of_to_string string_of_erreur)

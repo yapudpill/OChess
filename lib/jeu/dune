@@ -1,2 +1,3 @@
 (library
- (name jeu))
+ (name jeu)
+ (instrumentation (backend bisect_ppx)))
