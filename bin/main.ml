@@ -1,6 +1,6 @@
 open EntreeSortie.Affichage
 
-module R = Regles.Basique
+module R = Regles.RoiDeLaColine
 
 module J1 = Joueurs.Humain.Make(R)
 module J2 = Joueurs.Humain.Make(R)
@@ -14,7 +14,7 @@ let rec boucle_principale (partie : Jeu.Partie.t) =
   let partie = R.jouer partie coup in
 
   if R.pat partie then (partie, None)
-  else if R.mat partie then (partie, Some Jeu.Piece.Blanc)
+  else if R.perdu partie then (partie, Some Jeu.Piece.Blanc)
   else begin
     print_newline ();
     print_echiquier ~couleur:false partie.echiquier;

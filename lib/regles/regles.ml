@@ -17,6 +17,9 @@ module type Sig = sig
   val pat : Partie.t -> bool
   val mat : Partie.t -> bool
 
+  val perdu : Partie.t -> bool
+
 end
 
 module Basique : Sig = ReglesBasiques
+module RoiDeLaColine : Sig = ReglesRoiDeLaColine
