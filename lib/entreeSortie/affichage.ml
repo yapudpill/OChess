@@ -62,4 +62,4 @@ let string_of_echiquier ?(couleur = true) e =
   Buffer.contents buf
 
 let print_echiquier ?(couleur = true) e =
-  print_endline (string_of_echiquier ~couleur e)
+  print_string (string_of_echiquier ~couleur e)

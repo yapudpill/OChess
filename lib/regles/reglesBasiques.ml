@@ -2,8 +2,14 @@ open Jeu.Piece
 open Jeu.Echiquier
 open Jeu.Partie
 
-(*** Gestion des sauts et mouvements spéciaux (pion et cavalier) ***)
 
+(*** Création d'une partie ***)
+let init_partie () =
+  EntreeSortie.Fen.creer_partie_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+
+
+
+(*** Gestion des sauts et mouvements spéciaux (pion et cavalier) ***)
 let filter_saute_pas echiquier couleur coups_dir =
   let rec filter acc = function
   | [] ->  acc
@@ -56,7 +62,6 @@ let echec partie =
 
 
 (*** Obtention des coups légaux ***)
-
 let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
   let echiquier = Array.map Array.copy partie.echiquier in
   echiquier.${arr} <- echiquier.${dep};
@@ -111,7 +116,6 @@ let est_legal partie dep arr = List.mem arr (coups_legaux partie dep)
 
 
 (*** Gestion du roque ***)
-
 let peut_roquer partie  type_roque =
   let (x,y) = get_pos_roi partie partie.trait in
   peut_roquer_sans_echec partie type_roque
@@ -133,7 +137,6 @@ let roque partie type_roque=
 
 
 (*** Interprétation de la notation algébrique ***)
-
 let case_depart_autre partie p pos =
   deplacements_legaux partie (inverse partie.trait, p) pos
   |> List.filter (contient partie.echiquier (partie.trait, p))
@@ -171,7 +174,6 @@ let coup_of_algebrique partie = function
 
 
 (*** Jouer un coup ***)
-
 let jouer partie = function
 | Grand_Roque -> roque partie 1
 | Petit_Roque -> roque partie (-1)
@@ -184,7 +186,6 @@ let jouer partie = function
 
 
 (*** Fin de partie ***)
-
 let pat partie =
   not (echec partie) &&
   let pat = ref true in
@@ -210,5 +211,3 @@ let mat partie =
       done
     done;
     !mat
-
-let terminee partie = pat partie || mat partie

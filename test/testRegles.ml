@@ -1,6 +1,6 @@
 open Jeu
 open EntreeSortie.Fen
-open Regles.ReglesBasiques
+open Regles.Basique
 
 open TestUtil
 
@@ -31,9 +31,6 @@ let test_mat fen attendu  =
 
 let test_pat fen attendu  =
   Alcotest.(check bool) ("Pat " ^ fen) attendu (pat @@ creer_partie_fen fen)
-
-let test_terminee fen attendu =
-  Alcotest.(check bool) ("Terminée " ^ fen) attendu (terminee @@ creer_partie_fen fen)
 
 
 (*** Est attaquée ***)
@@ -206,16 +203,10 @@ let pat () =
   test_pat "2k4R/8/2K5/8/8/8/8/8 b - -" false;
   test_pat "8/8/p2k2n1/Pp6/1P1K4/6r1/8/8 w - -" false
 
-let terminee () =
-  test_terminee "2k4R/8/2K5/8/8/8/8/8 b - -" true;
-  test_terminee "8/8/p2k1n2/Pp6/1P1K4/6r1/8/8 w - -" true;
-  test_terminee "8/3N1pkp/4p1p1/3pb3/8/1P3P2/4Q1PP/R4K2 b - -" false
-
 let fin = [
   "Mat blancs", `Quick, mat_blancs;
   "Mat noirs", `Quick, mat_noirs;
   "Pat", `Quick, pat;
-  "Partie terminée", `Quick, terminee
 ]
 
 (*** Jouer **)
