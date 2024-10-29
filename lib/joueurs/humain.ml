@@ -1,17 +1,28 @@
 module Make (R : Regles.Sig) = struct
+  open EntreeSortie
+  open Jeu.Partie
+
+let lever_ambiguite algebrique deps =
+  let open EntreeSortie.Algebrique in
+  match algebrique with
+  | Grand_Roque | Petit_Roque -> failwith "Les roques ne sont pas ambigus"
+  | Arrivee (p, arr) ->
+    let possibles = List.map (fun dep -> to_string (Arrivee (p, dep)), Mouvement (dep, arr)) deps in
+    Choix.choix "Ce coup est ambigu, de quel départ s'agit-il ?" possibles
+
 
   let obtenir_coup partie =
     let rec boucle () =
       Printf.printf "Votre coup > ";
       let str = read_line () in
 
-      match EntreeSortie.Algebrique.from_string str with
+      match Algebrique.from_string str with
       | None -> print_endline "Entrée invalide"; boucle ()
-      | Some algebrique -> begin match R.coup_of_algebrique partie algebrique with
+      | Some algebrique ->
+        match R.coup_of_algebrique partie algebrique with
         | Ok coup -> coup
         | Error Invalide -> print_endline "Ce coup est illégal"; boucle ()
-        | Error (Ambigu _) -> print_endline "Ce coup est ambigu"; boucle ()
-      end
+        | Error (Ambigu deps) -> lever_ambiguite algebrique deps
     in
     boucle ()
 
