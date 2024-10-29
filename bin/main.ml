@@ -5,17 +5,13 @@ let regles : (string * (module Regles.Sig)) list = [
   "Règles basiques", (module Regles.Basique)
 ]
 
-let joueurs : (string * (module Joueurs.Sig)) list = [
-  "Vrai joueur", (module Joueurs.Humain)
+let joueurs : (string * (module Joueurs.MakeSig)) list = [
+  "Vrai joueur", (module Joueurs.Humain.Make)
 ]
 
 module R = (val Choix.choix "Veuillez sélectionner les règles :" regles)
-
-module MakeJoueur1 = (val Choix.choix "Veuillez sélectionner le joueur 1 :" joueurs)
-module J1 = MakeJoueur1.Make(R)
-
-module MakeJoueur2 = (val Choix.choix "Veuillez sélectionner le joueur 2 :" joueurs)
-module J2 = MakeJoueur2.Make(R)
+module J1 = (val Choix.choix "Veuillez sélectionner le joueur 1 :" joueurs) (R)
+module J2 = (val Choix.choix "Veuillez sélectionner le joueur 2 :" joueurs) (R)
 
 let rec boucle_principale (partie : Jeu.Partie.t) =
   print_string "\027[H\027[J"; (* Nettoie le terminal *)
