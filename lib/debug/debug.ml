@@ -1,5 +1,6 @@
 open Printf
 open Jeu.Partie
+open EntreeSortie.Affichage
 
 let print_pos (x,y)=
   printf "(%d,%d)\n" x y
@@ -25,18 +26,18 @@ let print_prise_en_passant m =
   else print_endline @@ string_pos_alg n
 
 let print_partie partie =
-  EntreeSortie.Affichage.print_echiquier ~couleur:false partie.echiquier;
-  print_endline @@ "trait : " ^ (match partie.trait with | Blanc -> "Blanc" | _ -> "Noir");
+  print_echiquier ~couleur:false partie.echiquier;
+  print_endline @@ "trait : " ^ (string_of_couleur partie.trait);
   print_string "Roi blanc : "; print_pos partie.roi_blanc;
   print_string "Roi noir : "; print_pos partie.roi_noir;
-  print_prise_en_passant partie.prise_en_passant
+  print_prise_en_passant partie.en_passant
 
 
 let print_partie' partie =
     EntreeSortie.Affichage.print_echiquier ~couleur:false partie.echiquier;
-    print_endline @@ "trait : " ^ (match partie.trait with | Blanc -> "Blanc" | _ -> "Noir");
+    print_endline @@ "trait : " ^ (string_of_couleur partie.trait);
     print_endline @@ "Roi blanc : " ^ (string_pos_alg partie.roi_blanc);
     print_endline @@ "Roi noir : " ^ (string_pos_alg partie.roi_noir);
-    print_prise_en_passant partie.prise_en_passant;
+    print_prise_en_passant partie.en_passant;
     print_endline "Votre coup : "
 

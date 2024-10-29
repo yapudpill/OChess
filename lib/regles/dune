@@ -1,3 +1,3 @@
 (library
  (name regles)
- (libraries jeu))
+ (libraries jeu entreeSortie))

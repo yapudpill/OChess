@@ -5,8 +5,17 @@ type t = {
   roi_noir : int * int;
   roque_blanc : bool * bool;
   roque_noir : bool * bool;
-  prise_en_passant : (int*int) option;
+  en_passant : (int*int) option;
 }
+
+type erreur =
+| Ambigu of (int * int) list
+| Invalide
+
+type coup =
+| Petit_Roque
+| Grand_Roque
+| Mouvement of (int * int) * (int * int)
 
 let get_pos_roi partie = function
 | Piece.Blanc -> partie.roi_blanc
@@ -17,12 +26,12 @@ let get_roque partie = function
 | Piece.Noir -> partie.roque_noir
 
 let set_pos_roi couleur arr partie = match couleur with
-| Piece.Blanc -> {partie with roi_blanc = arr; roque_blanc = (false, false)}
-| Piece.Noir  -> {partie with roi_noir = arr; roque_noir = (false, false)}
+| Piece.Blanc -> { partie with roi_blanc = arr; roque_blanc = (false, false) }
+| Piece.Noir  -> { partie with roi_noir  = arr; roque_noir  = (false, false) }
 
 let set_roque couleur roque partie = match couleur with
-| Piece.Blanc -> {partie with roque_blanc = roque}
-| Piece.Noir  -> {partie with roque_noir  = roque}
+| Piece.Blanc -> { partie with roque_blanc = roque }
+| Piece.Noir  -> { partie with roque_noir  = roque }
 
 let peut_roquer_sans_echec partie type_roque =
   let (g, p) = get_roque partie partie.trait in

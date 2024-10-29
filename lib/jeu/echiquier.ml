@@ -1,9 +1,5 @@
-open Piece
-
 type case = Piece.t option
 type t = case array array
-
-type coup = Petit_roque | Grand_roque | Mouvement of ptype * (int * int)
 
 (* Manipulation des échiquiers *)
 let (.${}) echiquier (x, y) = echiquier.(x).(y)
