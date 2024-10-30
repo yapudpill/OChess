@@ -2,6 +2,7 @@ module type Sig = sig
   open Jeu
 
   type infos
+  val string_of_infos : infos -> string option
 
   val init_partie : unit -> Partie.t*infos
   val init_pos : string -> Partie.t*infos
@@ -17,9 +18,8 @@ module type Sig = sig
   val coup_of_algebrique : Partie.t -> EntreeSortie.Algebrique.t -> (Partie.coup, Partie.erreur) result
   val jouer : Jeu.Partie.t * infos -> Partie.coup -> Jeu.Partie.t * infos
 
-  val pat : Jeu.Partie.t -> bool
-  val mat : Jeu.Partie.t -> bool
   val perdu : Jeu.Partie.t * infos -> bool
+  val egalite : Jeu.Partie.t * infos -> bool
 
 end
 

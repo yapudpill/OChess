@@ -27,10 +27,10 @@ let test_of_algebrique fen algebrique attendu =
   Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique partie algebrique)
 
 let test_mat fen attendu  =
-  Alcotest.(check bool) ("Mat " ^ fen) attendu (mat  @@ fst (init_pos fen) )
+  Alcotest.(check bool) ("Mat " ^ fen) attendu (perdu (init_pos fen))
 
 let test_pat fen attendu  =
-  Alcotest.(check bool) ("Pat " ^ fen) attendu (pat @@ fst (init_pos fen) )
+  Alcotest.(check bool) ("Pat " ^ fen) attendu (egalite (init_pos fen))
 
 
 (*** Est attaquée ***)

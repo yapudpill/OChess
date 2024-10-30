@@ -4,13 +4,14 @@ open Jeu.Partie
 
 
 type infos = unit
+let string_of_infos () = None
 
 (*** Création d'une partie ***)
-
 let init_pos fen =
-  EntreeSortie.Fen.creer_partie_fen fen,()
+  EntreeSortie.Fen.creer_partie_fen fen, ()
 
-  let init_partie () = init_pos "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+let init_partie () =
+  init_pos "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 
 
 (*** Gestion des sauts et mouvements spéciaux (pion et cavalier) ***)
@@ -178,13 +179,13 @@ let coup_of_algebrique partie = function
 
 
 (*** Jouer un coup ***)
-let jouer (partie,()) = function
-| Grand_Roque -> roque partie 1,()
-| Petit_Roque -> roque partie (-1),()
+let jouer (partie, i) = function
+| Grand_Roque -> roque partie 1, i
+| Petit_Roque -> roque partie (-1), i
 | Mouvement (dep, arr) ->
   if est_legal partie dep arr then
     let partie = deplacer_piece partie dep arr in
-    {partie with trait = inverse partie.trait},()
+    {partie with trait = inverse partie.trait}, i
   else failwith "jouer"
 
 
@@ -216,4 +217,5 @@ let mat partie =
     done;
     !mat
 
-let perdu (partie,()) = mat partie
+let perdu (partie, ()) = mat partie
+let egalite (partie, ()) = pat partie
