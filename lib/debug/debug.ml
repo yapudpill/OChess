@@ -1,9 +1,14 @@
 open Printf
 open Jeu.Partie
+open Jeu.Piece
 open EntreeSortie.Affichage
 
 let print_pos (x,y)=
   printf "(%d,%d)\n" x y
+
+let print_couleur = function
+   | Blanc -> print_endline "Blanc"
+   | Noir -> print_endline "Noir"
 
 let string_pos_alg (x,y) =
   let buf = Buffer.create 2 in
