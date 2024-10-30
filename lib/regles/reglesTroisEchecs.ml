@@ -175,10 +175,9 @@ let coup_of_algebrique partie = function
   | _ -> Error (Ambigu deps)
 
 
-let maj_echec couleur infos =
-  match couleur with
-  |Blanc -> print_endline "echec blanc +1"; {infos with echecs_blanc = infos.echecs_blanc +1}
-  | Noir -> print_endline "echec blanc +1"; {infos with echecs_noir = infos.echecs_noir +1}
+let maj_echec infos = function
+  |Blanc -> {infos with echecs_noir = infos.echecs_noir +1}
+  | Noir -> {infos with echecs_blanc = infos.echecs_blanc +1}
 
 
 
@@ -197,10 +196,9 @@ let jouer (partie,infos) = function
 | Mouvement (dep, arr) ->
   if est_legal partie dep arr then
     let partie = deplacer_piece partie dep arr in
-    let () = print_couleur partie.trait in
-    let infos = if echec partie then maj_echec partie.trait infos else infos in
-    let () = print_info infos in
-    {partie with trait = inverse partie.trait},infos
+    let partie = {partie with trait = inverse partie.trait} in
+    let infos = if echec partie then maj_echec infos partie.trait else infos in
+    partie,infos
   else failwith "jouer"
 
 
@@ -233,8 +231,9 @@ let mat partie =
     !mat
 
 let trois_echecs infos = function
-  | Blanc -> infos.echecs_blanc = 3
-  | Noir -> infos.echecs_noir = 3
+  | Blanc -> infos.echecs_noir = 3
+  | Noir -> infos.echecs_blanc = 3
 
 let perdu (partie,infos) =
+  print_info infos;
    mat partie || trois_echecs infos partie.trait

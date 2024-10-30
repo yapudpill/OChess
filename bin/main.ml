@@ -11,7 +11,7 @@ let rec boucle_principale (partie,infos) =
   print_echiquier ~couleur:false partie.echiquier;
   Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
   let coup = J1.obtenir_coup partie in
-  let partie,_ = R.jouer (partie,infos) coup in
+  let partie,infos = R.jouer (partie,infos) coup in
 
   if R.pat partie then (partie, None)
   else if R.perdu (partie,infos) then (partie, Some Jeu.Piece.Blanc)
