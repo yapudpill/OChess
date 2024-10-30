@@ -2,7 +2,6 @@
 
 *Un jeu d'échecs dans le terminal par Marc Robin et Anthony Fernandes*
 
-
 [![pipeline status](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/pipeline.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
 [![coverage report](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/coverage.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
 
@@ -22,7 +21,12 @@ eval $(opam env)
 ```
 
 Une fois les dépendances installées, le jeu peut être compilé avec `dune build`
-et exécuté avec `dune exec ochess`.
+et exécuté avec `dune exec -- ochess`.
+
+**Note concernant les couleurs :** Nous avons remarqué que certains terminaux
+(notamment celui intégré dans vscode) ne respectent pas séquence d'échappement
+utilisées pour afficher les couleurs. Par soucis de compatibilité, les couleurs
+peuvent être déactivées avec l'option `--no-colors`.
 
 ## Tests et couverture
 
