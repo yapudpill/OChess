@@ -43,6 +43,8 @@ let string_of_echiquier ?(couleur = true) e =
 
   let buf = Buffer.create 256 in
   for l = 7 downto 0 do
+    Buffer.add_string buf (string_of_int (l + 1) ^ " ");
+
     for c = 0 to 7 do
       if couleur then Buffer.add_string buf bg_cols.((l + c) mod 2);
 
@@ -54,11 +56,12 @@ let string_of_echiquier ?(couleur = true) e =
         Buffer.add_utf_8_uchar buf (unicode_of_piece ~couleur (c, p));
         Buffer.add_char buf ' ';
       end;
-
     done;
+
     if couleur then Buffer.add_string buf fin_col;
     Buffer.add_char buf '\n'
   done;
+  Buffer.add_string buf "   A  B  C  D  E  F  G  H \n";
   Buffer.contents buf
 
 let print_echiquier ?(couleur = true) e =
