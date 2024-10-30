@@ -1,9 +1,11 @@
-open OChess
-open Fen
-open ReglesBasiques
+open Jeu
+open EntreeSortie.Fen
+open Regles.Basique
 
 open TestUtil
 
+
+(*** Fonctions de test ***)
 let test_attaquee_dir fen (x, y) col attendu =
   let e = creer_partie_fen fen in
   let str = Printf.sprintf "%s : (%d, %d) attaquée par %s" fen x y (string_of_couleur col) in
@@ -14,23 +16,24 @@ let test_coups_legaux fen (x, y) attendu =
   let str = Printf.sprintf "%s : coups légaux depuis (%d, %d)" fen x y in
   Alcotest.(check mouv_list) str attendu (coups_legaux p (x, y))
 
+let test_roque fen type_roque attendu  =
+  let p = creer_partie_fen fen in
+  let str = Printf.sprintf "%s : roque de type %d" fen type_roque in
+  Alcotest.(check bool) str attendu (peut_roquer p type_roque)
+
+let test_of_algebrique fen algebrique attendu =
+  let partie = creer_partie_fen fen in
+  let str = Printf.sprintf "%s : conversion de %s en coup" fen (string_of_algebrique algebrique) in
+  Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique partie algebrique)
+
 let test_mat fen attendu  =
-  Alcotest.(check bool) ("Mat " ^ fen) attendu (ReglesBasiques.mat @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Mat " ^ fen) attendu (mat @@ creer_partie_fen fen)
 
 let test_pat fen attendu  =
-  Alcotest.(check bool) ("Pat " ^ fen) attendu (ReglesBasiques.pat @@ creer_partie_fen fen)
-
-let test_roque fen type_roque attendu  =
-  Alcotest.(check bool) ("roque " ^ fen) attendu (ReglesBasiques.peut_roquer (creer_partie_fen fen) type_roque)
-
-let test_case_depart fen p arr attendu =
-  let partie = creer_partie_fen fen in
-  Alcotest.check TestUtil.mouv_list ("Départ " ^ fen) attendu (ReglesBasiques.case_depart partie p arr)
-
-let test_terminee fen attendu =
-  Alcotest.(check bool) ("Terminée " ^ fen) attendu (ReglesBasiques.terminee @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Pat " ^ fen) attendu (pat @@ creer_partie_fen fen)
 
 
+(*** Est attaquée ***)
 let attaquee_simple () =
   test_attaquee_dir "5k2/8/2r5/B7/8/5Q2/8/3K4 w - -" (3, 4) Noir [[(4, 3); (5, 2)]];
   test_attaquee_dir "5k2/8/2r5/B7/8/5Q2/8/3K4 w - -" (1, 2) Noir [[(5, 2); (4, 2); (3, 2); (2, 2)]];
@@ -50,13 +53,14 @@ let attaquee_bool () =
   Alcotest.(check bool) "true" true (est_attaquee e Blanc (2, 1))
 
 let attaquee = [
-  "Attaque simple", `Quick, attaquee_simple;
-  "Attaque double", `Quick, attaquee_double;
-  "Aucune attaque", `Quick, attaquee_vide;
-  "Prédicat bool",  `Quick, attaquee_bool;
+  "Attaque simple",   `Quick, attaquee_simple;
+  "Attaque double",   `Quick, attaquee_double;
+  "Aucune attaque",   `Quick, attaquee_vide;
+  "Prédicat booléen", `Quick, attaquee_bool;
 ]
 
 
+(*** Cours légaux ***)
 let legaux_blanc () =
   test_coups_legaux "r3k2r/pp2qppp/2n1pn2/bN2N3/3P4/P3B2P/1P2bPP1/R2Q1RK1 w kq -"
     (3, 0) [(3, 2); (3, 1); (4, 0); (1, 0); (2, 0); (4, 1); (0, 3); (1, 2); (2, 1)];
@@ -85,42 +89,7 @@ let legaux = [
 ]
 
 
-let mat_blancs () =
-  test_mat "rnb1k1nr/pppp1ppp/8/1b2p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -" false;
-  test_mat "rnb1k1nr/pppp1ppp/8/2b1p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -" true;
-  test_mat "1kbnr/pppp1ppp/2n5/4p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -" false;
-  test_mat "1r6/2r5/8/7k/8/8/8/1K6 w - -" false;
-  test_mat "r7/1r6/8/7k/8/8/K3B1q1/8 w - -" true;
-  test_mat "r7/1r6/8/7k/8/8/K3B3/6q1 w - -" false;
-  test_mat "8/4k3/8/2r3bb/8/8/1P6/1RK5 w - -" true;
-  test_mat "8/4k2N/8/2r3bb/8/8/1P6/1RK5 w - -" true;
-  test_mat "8/4kb1N/8/2r3b1/8/8/1P6/1RK5 w - -" false;
-  test_mat "1k6/8/8/8/8/8/r1r5/1K6 w - -" false
-
-let mat_noirs () =
-  test_mat "2k4R/8/2K5/8/8/8/8/8 b - -" true;
-  test_mat "2k5/4N3/1K1Q4/8/8/8/8/8 b - -" true;
-  test_mat "2k5/7R/2K5/8/8/8/8/8 b - -" false;
-  test_mat "2k5/8/1K1Q4/8/8/8/8/8 b - -" false
-
-let mat = [
-  "Blancs", `Quick, mat_blancs;
-  "Noirs", `Quick, mat_noirs
-]
-
-
-let pat () =
-  test_pat "1k6/8/8/8/8/8/r1r5/1K6 b - -" false;
-  test_pat "8/8/p2k1n2/Pp6/1P1K4/6r1/8/8 w - -" true;
-  test_pat "1k6/8/8/8/8/8/r1r5/1K6 w - -" true;
-  test_pat "2k4R/8/2K5/8/8/8/8/8 b - -" false;
-  test_pat "8/8/p2k2n1/Pp6/1P1K4/6r1/8/8 w - -" false
-
-let pat = [
-  "Pat", `Quick, pat
-]
-
-
+(*** Peut roquer ***)
 let roque_blanc () =
   test_roque "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - KQkq -" 1 false;
   test_roque "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w - KQkq -" (-1) false;
@@ -149,105 +118,152 @@ let roque_noir () =
   test_roque "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R b KQ -" 1 false;
   test_roque "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R b KQ -" (-1) false
 
+let roque = [
+  "Blanc", `Quick, roque_blanc;
+  "Noir", `Quick, roque_noir;
+]
+
+
+(*** Coup of algébrique ***)
+let coups_pion () =
+  test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    (Arrivee (Pion, (4,3))) (Ok (Mouvement ((4,1), (4,3))));
+  test_of_algebrique "r2qk2r/pp1b1ppp/1Pnbpn2/3p2B1/Pp1PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
+    (Arrivee (Pion, (0,2))) (Ok (Mouvement ((1,3), (0,2))));
+  test_of_algebrique "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq -"
+    (Arrivee (Pion, (4,4))) (Ok (Mouvement ((4,6), (4,4))));
+  test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    (Arrivee (Pion, (4,2))) (Ok (Mouvement ((4,1), (4,2))));
+  test_of_algebrique "8/3N1pkp/4p1p1/3pb3/8/1P3P2/4Q1PP/R4K2 b - -"
+    (Arrivee (Pion, (3,3))) (Ok (Mouvement ((3,4), (3,3))));
+  test_of_algebrique "8/3N1pkp/4p3/3pb3/5pP1/1P3P2/4Q2P/R4K2 b - g3"
+    (Arrivee (Pion, (6,2))) (Ok (Mouvement ((5,3), (6,2))));
+  test_of_algebrique "7k/8/8/1pP5/8/8/8/7K w - b6"
+    (Arrivee (Pion, (1,5))) (Ok (Mouvement ((2, 4), (1,5))));
+  test_of_algebrique "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R b K -"
+    (Arrivee (Pion, (1,5))) (Error (Ambigu [(0,6); (2,6)]));
+  test_of_algebrique "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 w q -"
+    (Arrivee (Pion, (0,0))) (Error Invalide);
+  test_of_algebrique "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 b q -"
+    (Arrivee (Pion, (7,7))) (Error Invalide)
+
+let coups_autre () =
+  test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+    (Arrivee (Cavalier, (5,2))) (Ok (Mouvement ((6,0), (5,2))));
+  test_of_algebrique "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R w K -"
+    (Arrivee (Fou, (6,4))) (Ok (Mouvement ((2,0), (6,4))));
+  test_of_algebrique "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R w - -"
+    (Arrivee (Dame, (3,5))) (Ok (Mouvement ((0,2), (3,5))));
+  test_of_algebrique "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
+    (Arrivee (Tour, (2,7))) (Ok (Mouvement ((0,7), (2,7))));
+  test_of_algebrique "2bqkbnr/p2ppppp/R7/1Pp5/8/8/2PPPPP1/1NBQKBNR w Kk c6"
+    (Arrivee (Tour, (2,5))) (Ok (Mouvement ((0,5), (2,5))));
+  test_of_algebrique "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
+    (Arrivee (Roi, (4,6))) (Ok (Mouvement ((4,7), (4,6))));
+  test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -"
+    (Arrivee (Cavalier, (5,2))) (Error Invalide);
+  test_of_algebrique "r1bqkbnr/ppp2ppp/2n1p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQk -"
+    (Arrivee (Cavalier, (3,1))) (Error (Ambigu [(5,2); (1,0)]))
+
+let coups_roque () =
+  test_of_algebrique "4k2r/8/8/8/8/8/8/R3K3 w Qk -" Grand_Roque (Ok Grand_Roque);
+  test_of_algebrique "4k2r/8/8/8/8/8/8/R3K3 w Qk -" Petit_Roque (Error Invalide);
+  test_of_algebrique "4k2r/8/8/8/8/8/8/R3K3 b Qk -" Grand_Roque (Error Invalide);
+  test_of_algebrique "4k2r/8/8/8/8/8/8/R3K3 b Qk -" Petit_Roque (Ok Petit_Roque)
+
+let coups = [
+  "Pion",   `Quick, coups_pion;
+  "Autres", `Quick, coups_autre;
+  "Roque",  `Quick, coups_roque
+]
+
+(*** Fin de partie ***)
+let mat_blancs () =
+  test_mat "rnb1k1nr/pppp1ppp/8/1b2p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -" false;
+  test_mat "rnb1k1nr/pppp1ppp/8/2b1p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -" true;
+  test_mat "1kbnr/pppp1ppp/2n5/4p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -" false;
+  test_mat "1r6/2r5/8/7k/8/8/8/1K6 w - -" false;
+  test_mat "r7/1r6/8/7k/8/8/K3B1q1/8 w - -" true;
+  test_mat "r7/1r6/8/7k/8/8/K3B3/6q1 w - -" false;
+  test_mat "8/4k3/8/2r3bb/8/8/1P6/1RK5 w - -" true;
+  test_mat "8/4k2N/8/2r3bb/8/8/1P6/1RK5 w - -" true;
+  test_mat "8/4kb1N/8/2r3b1/8/8/1P6/1RK5 w - -" false;
+  test_mat "1k6/8/8/8/8/8/r1r5/1K6 w - -" false
+
+let mat_noirs () =
+  test_mat "2k4R/8/2K5/8/8/8/8/8 b - -" true;
+  test_mat "2k5/4N3/1K1Q4/8/8/8/8/8 b - -" true;
+  test_mat "2k5/7R/2K5/8/8/8/8/8 b - -" false;
+  test_mat "2k5/8/1K1Q4/8/8/8/8/8 b - -" false
+
+let pat () =
+  test_pat "1k6/8/8/8/8/8/r1r5/1K6 b - -" false;
+  test_pat "8/8/p2k1n2/Pp6/1P1K4/6r1/8/8 w - -" true;
+  test_pat "1k6/8/8/8/8/8/r1r5/1K6 w - -" true;
+  test_pat "2k4R/8/2K5/8/8/8/8/8 b - -" false;
+  test_pat "8/8/p2k2n1/Pp6/1P1K4/6r1/8/8 w - -" false
+
+let fin = [
+  "Mat blancs", `Quick, mat_blancs;
+  "Mat noirs", `Quick, mat_noirs;
+  "Pat", `Quick, pat;
+]
+
+(*** Jouer **)
+
 let petit_roque () =
   let open Echiquier in
   let p = creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -" in
-  let p = Option.get @@ roque p 1 in
-  Alcotest.check case "Roi" (Piece (Blanc, Roi)) p.echiquier.${6, 0};
-  Alcotest.check case "Tour" (Piece (Blanc, Tour)) p.echiquier.${5, 0};
+  let p = jouer p Grand_Roque in
+  Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${6, 0};
+  Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${5, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let grand_roque () =
   let open Echiquier in
   let p = creer_partie_fen "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
-  let p = Option.get @@ roque p (-1) in
-  Alcotest.check case "Roi" (Piece (Blanc, Roi)) p.echiquier.${2, 0};
-  Alcotest.check case "Tour" (Piece (Blanc, Tour)) p.echiquier.${3, 0};
+  let p = jouer p Petit_Roque in
+  Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${2, 0};
+  Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${3, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let roque_invalide () =
-  let p = creer_partie_fen "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
-  let p = roque p 1 in
-  Alcotest.(check bool) "Roque invalide" true (p = None)
-
-let roque = [
-  "Peut roquer blanc", `Quick, roque_blanc;
-  "Peut roquer noir", `Quick, roque_noir;
-  "Petit roque", `Quick, petit_roque;
-  "Grand roque", `Quick, grand_roque;
-  "Pas de roque", `Quick, roque_invalide;
-]
-
-
-let case_depart_pion () =
-  test_case_depart "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -" Pion (4,3) [(4,1)];
-  test_case_depart "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R b K -" Pion (1,5) [(0,6);(2,6)];
-  test_case_depart "r2qk2r/pp1b1ppp/1Pnbpn2/3p2B1/Pp1PP3/Q1N2N2/2P1BPPP/R3K2R b - -" Pion (0,2) [(1,3)];
-  test_case_depart "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq -" Pion (4,4) [(4,6)];
-  test_case_depart "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 b q -" Pion (7,7) [];
-  test_case_depart "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -" Pion (4,2) [(4,1)];
-  test_case_depart "8/3N1pkp/4p1p1/3pb3/8/1P3P2/4Q1PP/R4K2 b - -" Pion (3,3) [(3,4)];
-  test_case_depart "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 w q -" Pion (0,0) [];
-  test_case_depart "8/3N1pkp/4p3/3pb3/5pP1/1P3P2/4Q2P/R4K2 b - g3" Pion (6, 2) [(5,3)];
-  test_case_depart "7k/8/8/1pP5/8/8/8/7K w - b6" Pion (1, 5) [(2, 4)]
-
-let case_depart_autre () =
-  test_case_depart "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -" Cavalier (5,2) [(6,0)];
-  test_case_depart "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -" Cavalier (5,2) [];
-  test_case_depart "r1bqkbnr/ppp2ppp/2n1p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQk -" Cavalier (3,1) [(5,2);(1,0)];
-  test_case_depart "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R w K -" Fou (6,4) [(2,0)];
-  test_case_depart "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R w - -" Dame (3,5) [(0,2)];
-  test_case_depart "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -" Tour ((2,7)) [(0,7)];
-  test_case_depart "2bqkbnr/p2ppppp/R7/1Pp5/8/8/2PPPPP1/1NBQKBNR w Kk c6" Tour ((2,5)) [(0,5)];
-  test_case_depart "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -" Roi (4,6) [(4,7)]
-
-let case_depart = [
-  "Case(s) départ pion", `Quick, case_depart_pion;
-  "Case(s) départ autre", `Quick, case_depart_autre
-]
-
+  let p = creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w - -" in
+  Alcotest.check_raises "Invalide" (Failure "roque")
+    (fun () -> ignore @@ jouer p Petit_Roque)
 
 let test_jouer_blanc () =
   let open Echiquier in
   let p = creer_partie_fen "8/1P4k1/8/8/4r3/4R3/8/4K3 w - -" in
-  let p1 = Option.get @@ jouer p (4, 2) (4, 3) in
-  let p2 = Option.get @@ jouer p (1, 6) (1, 7) in
-  let p3 = jouer p (4, 2) (3, 2) in
-  Alcotest.check case "Coup valide" (Piece (Blanc, Tour)) p1.echiquier.${4, 3};
-  Alcotest.check case "Promotion" (Piece (Blanc, Dame)) p2.echiquier.${1, 7};
-  Alcotest.(check bool) "Invalide" true (p3 = None)
+  let p1 = jouer p (Mouvement ((4, 2), (4, 3))) in
+  let p2 = jouer p (Mouvement ((1, 6), (1, 7))) in
+  Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p1.echiquier.${4, 3};
+  Alcotest.check case "Promotion"   (Some (Blanc, Dame)) p2.echiquier.${1, 7};
+  Alcotest.check_raises "Invalide" (Failure "jouer")
+    (fun () -> ignore @@ jouer p (Mouvement ((4, 2), (3, 2))))
 
 let test_jouer_noir () =
   let open Echiquier in
   let p = creer_partie_fen "8/6k1/8/8/4r3/4R3/1p6/4K3 b - -" in
-  let p1 = Option.get @@ jouer p (4, 3) (5, 3) in
-  let p2 = Option.get @@ jouer p (1, 1) (1, 0) in
-  Alcotest.check case "Coup valide" (Piece (Noir, Tour)) p1.echiquier.${5, 3};
-  Alcotest.check case "Promotion" (Piece (Noir, Dame)) p2.echiquier.${1, 0}
+  let p1 = jouer p (Mouvement ((4, 3), (5, 3))) in
+  let p2 = jouer p (Mouvement ((1, 1), (1, 0))) in
+  Alcotest.check case "Coup valide" (Some (Noir, Tour)) p1.echiquier.${5, 3};
+  Alcotest.check case "Promotion"   (Some (Noir, Dame)) p2.echiquier.${1, 0}
 
 let jouer = [
-  "Blancs", `Quick, test_jouer_blanc;
-  "Noir", `Quick, test_jouer_noir;
-]
-
-
-let terminee () =
-  test_terminee "2k4R/8/2K5/8/8/8/8/8 b - -" true;
-  test_terminee "8/8/p2k1n2/Pp6/1P1K4/6r1/8/8 w - -" true;
-  test_terminee "8/3N1pkp/4p1p1/3pb3/8/1P3P2/4Q1PP/R4K2 b - -" false
-
-let terminee = [
-  "Partie terminée", `Quick, terminee
+  "Grand roque",    `Quick, grand_roque;
+  "Petit roque",    `Quick, petit_roque;
+  "Roque invalide", `Quick, roque_invalide;
+  "Coup blancs",    `Quick, test_jouer_blanc;
+  "Coup noirs",     `Quick, test_jouer_noir;
 ]
 
 
 let () = Alcotest.run "Mat et Pat" [
   "Est attaquée", attaquee;
   "Coups légaux", legaux;
+  "Peut Roquer", roque;
+  "Algébrique vers coup", coups;
+  "Fin de partie", fin;
   "Jouer", jouer;
-  "Pat", pat;
-  "Roque", roque;
-  "Mat", mat;
-  "Case(s) départ", case_depart;
-  "Partie terminée", terminee
 ]

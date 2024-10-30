@@ -1,7 +1,6 @@
 (* Types de base *)
-type case = Vide | Piece of Piece.t
+type case = Piece.t option
 type t = case array array
-type coup = Petit_roque | Grand_roque | Mouvement of Piece.ptype * (int * int)
 
 (* Accès/modificaton d'échiquier *)
 val (.${}) : t -> int * int -> case

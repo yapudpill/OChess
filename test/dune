@@ -7,4 +7,4 @@
   testPartie
   testEchiquier
   testFen)
- (libraries alcotest OChess))
+ (libraries alcotest jeu entreeSortie regles))

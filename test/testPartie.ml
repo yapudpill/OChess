@@ -1,4 +1,5 @@
-open OChess
+open EntreeSortie
+open Jeu
 
 
 let test_peut_roquer_sans_echec fen type_roque attendu =

@@ -1,38 +1,54 @@
-open OChess
-open ReglesBasiques
-open Echiquier
-open Affichage
+open EntreeSortie
+open EntreeSortie.Affichage
 
-let partie = ref @@ Fen.creer_partie_fen "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+let regles : (string * (module Regles.Sig)) list = [
+  "Règles basiques", (module Regles.Basique)
+]
+
+let joueurs : (string * (module Joueurs.MakeSig)) list = [
+  "Vrai joueur", (module Joueurs.Humain.Make)
+]
+
+module R = (val Choix.choix "Veuillez sélectionner les règles :" regles)
+module J1 = (val Choix.choix "Veuillez sélectionner le joueur 1 :" joueurs) (R)
+module J2 = (val Choix.choix "Veuillez sélectionner le joueur 2 :" joueurs) (R)
+
+let rec boucle_principale (partie : Jeu.Partie.t) =
+  print_string "\027[H\027[J"; (* Nettoie le terminal *)
+
+  print_echiquier ~couleur:false partie.echiquier;
+  Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
+  let coup = J1.obtenir_coup partie in
+  let partie = R.jouer partie coup in
+
+  if R.pat partie then (partie, None)
+  else if R.mat partie then (partie, Some Jeu.Piece.Blanc)
+  else begin
+    print_newline ();
+    print_echiquier ~couleur:false partie.echiquier;
+    Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
+    let coup = J2.obtenir_coup partie in
+    let partie = R.jouer partie coup in
+
+    if R.pat partie then (partie, None)
+    else if R.mat partie then (partie, Some Jeu.Piece.Noir)
+    else begin
+      print_newline ();
+      print_echiquier ~couleur:false partie.echiquier;
+      Printf.printf "(Appuyer sur entrée pour passer au tour suivant)";
+      ignore (read_line ());
+
+      boucle_principale partie
+    end
+  end
+
+
+(* Main *)
+let (partie, gagnant) = boucle_principale (R.init_partie ())
 
 let () =
-  print_endline "\027[H\027[J";
-  while not (terminee !partie) do
-    print_echiquier ~couleur:false (!partie).echiquier;
-    Printf.printf "Trait : %s\n" (string_of_couleur !partie.trait);
-
-    Printf.printf "Votre coup > ";
-    let coup = read_line () in
-
-    print_string "\027[H\027[J";
-
-    partie := begin match Algebrique.from_algebrique coup with
-    | None -> print_endline "Ce coup est invalide"; !partie
-    | Some Petit_roque -> (match roque !partie 1 with
-      | None -> print_endline "Ce coup est illégal"; !partie
-      | Some p -> p)
-    | Some Grand_roque -> (match roque !partie (-1) with
-      | None -> print_endline "Ce coup est illégal"; !partie
-      | Some p -> p)
-    | Some (Mouvement (p,arr)) -> (
-      match case_depart !partie p arr with
-      | [] -> print_endline "Ce coup est illégal"; !partie
-      | _ :: _ :: _ -> print_endline "Ce coup est ambigu"; !partie
-      | [ dep ] -> (
-        match jouer !partie dep arr with
-        | Some p -> print_newline (); p
-        | None -> print_endline "Ce coup est illégal"; !partie
-        )
-      )
-    end
-  done
+  print_newline ();
+  print_echiquier ~couleur:false partie.echiquier;
+  print_endline @@ match gagnant with
+  | None -> "Pat"
+  | Some couleur -> "Vainqueur: " ^ (string_of_couleur couleur)

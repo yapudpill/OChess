@@ -1,4 +1,5 @@
-open Piece
+open Jeu.Piece
+open Jeu.Echiquier
 
 let string_of_couleur = function
 | Blanc -> "Blanc"
@@ -36,7 +37,6 @@ let unicode_of_piece ?(couleur = true) (c, p) =
 
 
 let string_of_echiquier ?(couleur = true) e =
-  let open Echiquier in
   let bg_cols = [| "\027[44m"; "\027[106m" |] in (* [| bleu foncé; bleu clair |]*)
   let fg_col c = match c with Blanc -> "\027[97m" | Noir -> "\027[30m" in
   let fin_col ="\027[0m" in
@@ -47,8 +47,8 @@ let string_of_echiquier ?(couleur = true) e =
       if couleur then Buffer.add_string buf bg_cols.((l + c) mod 2);
 
       begin match e.${c, l} with
-      | Vide -> Buffer.add_string buf (if couleur then "   " else " . ")
-      | Piece (c, p) ->
+      | None -> Buffer.add_string buf (if couleur then "   " else " . ")
+      | Some (c, p) ->
         Buffer.add_char buf ' ';
         if couleur then Buffer.add_string buf (fg_col c);
         Buffer.add_utf_8_uchar buf (unicode_of_piece ~couleur (c, p));
@@ -62,4 +62,4 @@ let string_of_echiquier ?(couleur = true) e =
   Buffer.contents buf
 
 let print_echiquier ?(couleur = true) e =
-  print_endline (string_of_echiquier ~couleur e)
+  print_string (string_of_echiquier ~couleur e)

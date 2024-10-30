@@ -22,7 +22,7 @@ eval $(opam env)
 ```
 
 Une fois les dépendances installées, le jeu peut être compilé avec `dune build`
-et exécuté avec `dune exec OChess`.
+et exécuté avec `dune exec ochess`.
 
 ## Tests et couverture
 

@@ -1,0 +1,4 @@
+(library
+ (name entreeSortie)
+ (libraries jeu)
+ (instrumentation (backend bisect_ppx)))

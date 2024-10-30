@@ -1,6 +1,5 @@
-open Piece
-open Echiquier
-open Partie
+open Jeu.Piece
+open Jeu.Echiquier
 
 (* Fonction pour convertir un caractère en pièce (ptype, couleur) *)
 let piece_of_char c =
@@ -15,7 +14,7 @@ let piece_of_char c =
     | 'P' -> Pion
     | _ -> failwith "Caractère non valide"
   in
-  Piece (couleur, ptype)
+  Some (couleur, ptype)
 
 (* Fonction auxiliaire récursive *)
 let rec from_fen_aux fen echiquier x y k =
@@ -36,15 +35,15 @@ let rec from_fen_aux fen echiquier x y k =
 
 (* Fonction principale from_fen *)
 let from_fen fen =
-  let echiquier = Array.init_matrix 8 8 (fun _ _ -> Vide) in
+  let echiquier = Array.init_matrix 8 8 (fun _ _ -> None) in
   from_fen_aux fen echiquier 0 7 0
 
 let rec trouver_rois echiquier x y roi_blanc roi_noir =
   if x = 8 then (roi_blanc, roi_noir)
   else if y = 8 then trouver_rois echiquier (x + 1) 0 roi_blanc roi_noir
   else match echiquier.${x, y} with
-  | Piece (Blanc, Roi) -> trouver_rois echiquier x (y + 1) (x, y) roi_noir
-  | Piece (Noir, Roi) -> trouver_rois echiquier x (y + 1) roi_blanc (x, y)
+  | Some (Blanc, Roi) -> trouver_rois echiquier x (y + 1) (x, y) roi_noir
+  | Some (Noir, Roi) -> trouver_rois echiquier x (y + 1) roi_blanc (x, y)
   | _ -> trouver_rois echiquier x (y + 1) roi_blanc roi_noir
 
 (* Fonction pour convertir les droits de roque depuis le FEN *)
@@ -67,12 +66,12 @@ let creer_partie_fen fen =
   let roi_blanc, roi_noir = trouver_rois echiquier 0 0 (-1, -1) (-1, -1) in
   if roi_blanc = (-1, -1) || roi_noir = (-1, -1) then failwith "FEN invalide"
   else
-    {
+    Jeu.Partie.{
       echiquier;
       trait = if List.nth parts 1 = "w" then Blanc else Noir;
       roi_blanc;
       roi_noir;
       roque_blanc;
       roque_noir;
-      prise_en_passant = prise_en_passant @@ List.nth parts 3
+      en_passant = prise_en_passant @@ List.nth parts 3
     }

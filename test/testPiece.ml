@@ -1,5 +1,4 @@
-open OChess
-open Piece
+open Jeu.Piece
 
 open TestUtil
 
