@@ -2,15 +2,15 @@ open Jeu.Piece
 open Jeu.Echiquier
 open Jeu.Partie
 
-
-type infos = unit
+type infos = {echecs_blanc : int; echecs_noir : int}
 
 (*** Création d'une partie ***)
 
 let init_pos fen =
-  EntreeSortie.Fen.creer_partie_fen fen,()
+  EntreeSortie.Fen.creer_partie_fen fen,{echecs_blanc = 0; echecs_noir = 0}
 
-  let init_partie () = init_pos "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+let init_partie () = init_pos "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
+
 
 
 (*** Gestion des sauts et mouvements spéciaux (pion et cavalier) ***)
@@ -57,7 +57,6 @@ let attaquee_dir partie couleur pos =
     |> List.filter (List.exists (contient partie.echiquier (inverse couleur, p)))
   ) [ Roi; Dame; Fou; Tour; Cavalier; Pion ]
 
-(** [couleur] correspond à la couleur défendant la case [pos]. *)
 let est_attaquee partie couleur pos = attaquee_dir partie couleur pos <> []
 
 let echec partie =
@@ -123,7 +122,7 @@ let est_legal partie dep arr = List.mem arr (coups_legaux partie dep)
 let peut_roquer partie  type_roque =
   let (x,y) = get_pos_roi partie partie.trait in
   peut_roquer_sans_echec partie type_roque
-  && not (echec partie)
+  && not (echec partie )
   && est_vide partie.echiquier.${(x + type_roque, y)}
   && est_vide partie.echiquier.${(x + 2*type_roque, y)}
   && not @@ est_attaquee partie partie.trait (x + type_roque, y)
@@ -169,22 +168,39 @@ let coup_of_algebrique partie = function
   let potentiels = match p with
   | Pion -> case_depart_pion partie arr
   | _ -> case_depart_autre partie p arr in
-  let deps = List.filter (fun dep -> not @@ echec (deplacer_piece partie dep arr)) potentiels in
+  let deps = List.filter (fun dep -> not @@ echec (deplacer_piece partie dep arr) ) potentiels in
   match deps with
   | [] -> Error Invalide
   | [dep] -> Ok (Mouvement (dep, arr))
   | _ -> Error (Ambigu deps)
 
 
+let maj_echec couleur infos =
+  match couleur with
+  |Blanc -> print_endline "echec blanc +1"; {infos with echecs_blanc = infos.echecs_blanc +1}
+  | Noir -> print_endline "echec blanc +1"; {infos with echecs_noir = infos.echecs_noir +1}
+
+
+
+
+let print_couleur = function
+  | Blanc -> print_endline "Blanc"
+  | Noir -> print_endline "Noir"
+
+let print_info info =
+  Printf.printf "(echecs blanc : %d, echecs noir : %d)" info.echecs_blanc info.echecs_noir
 
 (*** Jouer un coup ***)
-let jouer (partie,()) = function
-| Grand_Roque -> roque partie 1,()
-| Petit_Roque -> roque partie (-1),()
+let jouer (partie,infos) = function
+| Grand_Roque -> roque partie 1,infos
+| Petit_Roque -> roque partie (-1),infos
 | Mouvement (dep, arr) ->
   if est_legal partie dep arr then
     let partie = deplacer_piece partie dep arr in
-    {partie with trait = inverse partie.trait},()
+    let () = print_couleur partie.trait in
+    let infos = if echec partie then maj_echec partie.trait infos else infos in
+    let () = print_info infos in
+    {partie with trait = inverse partie.trait},infos
   else failwith "jouer"
 
 
@@ -216,4 +232,9 @@ let mat partie =
     done;
     !mat
 
-let perdu (partie,()) = mat partie
+let trois_echecs infos = function
+  | Blanc -> infos.echecs_blanc = 3
+  | Noir -> infos.echecs_noir = 3
+
+let perdu (partie,infos) =
+   mat partie || trois_echecs infos partie.trait

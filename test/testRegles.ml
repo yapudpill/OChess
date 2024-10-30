@@ -12,7 +12,7 @@ let test_attaquee_dir fen (x, y) col attendu =
   Alcotest.(check mouv_list_list) str attendu (attaquee_dir e col (x, y))
 
 let test_coups_legaux fen (x, y) attendu =
-  let p = creer_partie_fen fen in
+  let p,_ = init_pos fen in
   let str = Printf.sprintf "%s : coups légaux depuis (%d, %d)" fen x y in
   Alcotest.(check mouv_list) str attendu (coups_legaux p (x, y))
 
@@ -22,15 +22,15 @@ let test_roque fen type_roque attendu  =
   Alcotest.(check bool) str attendu (peut_roquer p type_roque)
 
 let test_of_algebrique fen algebrique attendu =
-  let partie = creer_partie_fen fen in
+  let partie,_ = init_pos fen in
   let str = Printf.sprintf "%s : conversion de %s en coup" fen (string_of_algebrique algebrique) in
   Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique partie algebrique)
 
 let test_mat fen attendu  =
-  Alcotest.(check bool) ("Mat " ^ fen) attendu (mat @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Mat " ^ fen) attendu (mat  @@ fst (init_pos fen) )
 
 let test_pat fen attendu  =
-  Alcotest.(check bool) ("Pat " ^ fen) attendu (pat @@ creer_partie_fen fen)
+  Alcotest.(check bool) ("Pat " ^ fen) attendu (pat @@ fst (init_pos fen) )
 
 
 (*** Est attaquée ***)
@@ -78,7 +78,7 @@ let legaux_noir () =
     (7, 0) []
 
 let legaux_bool () =
-  let p = creer_partie_fen "r3k2r/pp2qppp/2n1pn2/bN2N3/3P4/P3B2P/1P2bPP1/R2Q1RK1 w kq -" in
+  let p,_ = init_pos "r3k2r/pp2qppp/2n1pn2/bN2N3/3P4/P3B2P/1P2bPP1/R2Q1RK1 w kq -" in
   Alcotest.(check bool) "true" true (est_legal p (3, 0) (4, 1));
   Alcotest.(check bool) "false" false (est_legal p (5, 0) (4, 1))
 
@@ -213,30 +213,30 @@ let fin = [
 
 let petit_roque () =
   let open Echiquier in
-  let p = creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -" in
-  let p = jouer p Grand_Roque in
+  let p = init_pos "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -" in
+  let p,_ = jouer p Grand_Roque in
   Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${6, 0};
   Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${5, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let grand_roque () =
   let open Echiquier in
-  let p = creer_partie_fen "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
-  let p = jouer p Petit_Roque in
+  let p = init_pos "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
+  let p,_ = jouer p Petit_Roque in
   Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${2, 0};
   Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${3, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let roque_invalide () =
-  let p = creer_partie_fen "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w - -" in
+  let p = init_pos "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w - -" in
   Alcotest.check_raises "Invalide" (Failure "roque")
     (fun () -> ignore @@ jouer p Petit_Roque)
 
 let test_jouer_blanc () =
   let open Echiquier in
-  let p = creer_partie_fen "8/1P4k1/8/8/4r3/4R3/8/4K3 w - -" in
-  let p1 = jouer p (Mouvement ((4, 2), (4, 3))) in
-  let p2 = jouer p (Mouvement ((1, 6), (1, 7))) in
+  let p = init_pos "8/1P4k1/8/8/4r3/4R3/8/4K3 w - -" in
+  let p1,_ = jouer p (Mouvement ((4, 2), (4, 3))) in
+  let p2,_ = jouer p (Mouvement ((1, 6), (1, 7))) in
   Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p1.echiquier.${4, 3};
   Alcotest.check case "Promotion"   (Some (Blanc, Dame)) p2.echiquier.${1, 7};
   Alcotest.check_raises "Invalide" (Failure "jouer")
@@ -244,9 +244,9 @@ let test_jouer_blanc () =
 
 let test_jouer_noir () =
   let open Echiquier in
-  let p = creer_partie_fen "8/6k1/8/8/4r3/4R3/1p6/4K3 b - -" in
-  let p1 = jouer p (Mouvement ((4, 3), (5, 3))) in
-  let p2 = jouer p (Mouvement ((1, 1), (1, 0))) in
+  let p = init_pos "8/6k1/8/8/4r3/4R3/1p6/4K3 b - -" in
+  let p1,_ = jouer p (Mouvement ((4, 3), (5, 3))) in
+  let p2,_ = jouer p (Mouvement ((1, 1), (1, 0))) in
   Alcotest.check case "Coup valide" (Some (Noir, Tour)) p1.echiquier.${5, 3};
   Alcotest.check case "Promotion"   (Some (Noir, Dame)) p2.echiquier.${1, 0}
 
