@@ -47,3 +47,23 @@ bisect-ppx-report html
 # Afficher un résumé dans le terminal
 bisect-ppx-report summary
 ```
+
+## Parallèle avec l'API suggérée en cours
+
+Ce projet était déjà bien avancé quand l'API a été suggérée au premier TP, nous
+avons donc gardé notre organisation, qui s'avère être finalement proche de
+l'organisation proposée.
+
+| API                            | Notre organisation                       |
+| ------------------------------ | ---------------------------------------- |
+| `type game_state + gamme_view` | `Jeu.Partie.t * Regles.Sig.infos`        |
+| `type player + bot`            | Modules dans `joueurs`                   |
+| `type play`                    | `Jeu.Partie.coup`                        |
+| `type error`                   | `Jeu.Partie.erreur`                      |
+| `type outcome`                 | Pas d'équivalent (*)                     |
+| `val view`                     | Par nécessaire                           |
+| `val display`                  | `EntreeSortie.Affichage.print_echiquier` |
+| `val act`                      | `Regles.Sig.jouer`                       |
+
+(*): La validité d'un coup est vérifiée par `coup_of_algebrique` et `est_legal`,
+le résultat est obtenu avec `egalite` et `perdu`
