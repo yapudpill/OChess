@@ -6,6 +6,7 @@ let lever_ambiguite algebrique deps =
   let open EntreeSortie.Algebrique in
   match algebrique with
   | Grand_Roque | Petit_Roque -> failwith "Les roques ne sont pas ambigus"
+  | Placement _ ->  failwith "Les placements ne sont pas ambigus"
   | Arrivee (p, arr) ->
     let possibles = List.map (fun dep -> to_string (Arrivee (p, dep)), Mouvement (dep, arr)) deps in
     Choix.choix "Ce coup est ambigu, de quel départ s'agit-il ?" possibles

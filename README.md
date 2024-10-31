@@ -26,7 +26,7 @@ et exécuté avec `dune exec -- ochess`.
 **Note concernant les couleurs :** Nous avons remarqué que certains terminaux
 (notamment celui intégré dans vscode) ne respectent pas séquence d'échappement
 utilisées pour afficher les couleurs. Par soucis de compatibilité, les couleurs
-peuvent être déactivées avec l'option `--no-colors`.
+peuvent être désactivées avec l'option `--no-colors`.
 
 ## Tests et couverture
 

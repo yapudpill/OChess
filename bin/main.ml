@@ -16,7 +16,9 @@ let couleur =
 let regles : (string * (module Regles.Sig)) list = [
   "Règles basiques", (module Regles.Basique);
   "Roi de la colline", (module Regles.RoiDeLaColine);
-  "3 échecs", (module Regles.TroisEchecs)
+  "3 échecs", (module Regles.TroisEchecs);
+  "Crazyhouse", (module Regles.Crazyhouse)
+
 ]
 
 let joueurs : (string * (module Joueurs.MakeSig)) list = [
@@ -34,7 +36,7 @@ let rec boucle_principale (partie,infos) =
 
   print_echiquier ~couleur partie.echiquier;
   Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
-  Option.fold (R.string_of_infos infos) ~none:() ~some:(Printf.printf "Infos : %s\n");
+  Option.fold (R.string_of_infos (partie,infos) ) ~none:() ~some:(Printf.printf "Infos : %s\n");
 
   let coup = J1.obtenir_coup partie in
   let partie,infos = R.jouer (partie,infos) coup in
@@ -45,10 +47,10 @@ let rec boucle_principale (partie,infos) =
     print_newline ();
     print_echiquier ~couleur partie.echiquier;
     Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
-    Option.fold (R.string_of_infos infos) ~none:() ~some:(Printf.printf "Infos : %s\n");
+    Option.fold (R.string_of_infos (partie,infos) ) ~none:() ~some:(Printf.printf "Infos : %s\n");
 
     let coup = J2.obtenir_coup partie in
-    let partie,_ = R.jouer (partie,infos) coup in
+    let partie,infos = R.jouer (partie,infos) coup in
 
     if R.egalite (partie, infos) then (partie, None)
     else if R.perdu (partie, infos) then (partie, Some Jeu.Piece.Noir)

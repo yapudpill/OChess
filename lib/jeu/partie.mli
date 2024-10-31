@@ -15,7 +15,9 @@ type erreur =
 type coup =
 | Petit_Roque
 | Grand_Roque
+| Placement of Piece.ptype * (int * int)
 | Mouvement of (int * int) * (int * int)
+
 
 val get_pos_roi : t -> Piece.couleur -> int * int
 val get_roque : t -> Piece.couleur -> bool * bool

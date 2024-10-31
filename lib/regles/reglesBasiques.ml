@@ -4,7 +4,7 @@ open Jeu.Partie
 
 
 type infos = unit
-let string_of_infos () = None
+let string_of_infos _ = None
 
 (*** Création d'une partie ***)
 let init_pos fen =
@@ -162,6 +162,7 @@ let case_depart_pion partie (x,y) =
       else []
 
 let coup_of_algebrique partie = function
+| EntreeSortie.Algebrique.Placement _ -> Error Invalide
 | EntreeSortie.Algebrique.Grand_Roque ->
   if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
 | EntreeSortie.Algebrique.Petit_Roque ->
@@ -187,6 +188,7 @@ let jouer (partie, i) = function
     let partie = deplacer_piece partie dep arr in
     {partie with trait = inverse partie.trait}, i
   else failwith "jouer"
+| Placement _ -> failwith "jouer"
 
 
 

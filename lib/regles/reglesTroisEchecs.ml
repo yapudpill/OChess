@@ -4,7 +4,7 @@ open Jeu.Partie
 include ReglesBasiques
 
 type infos = { echecs_blanc : int; echecs_noir : int }
-let string_of_infos i =
+let string_of_infos (_,i) =
   Some (Printf.sprintf "echecs blanc : %d, echecs noir : %d" i.echecs_blanc i.echecs_noir)
 
 

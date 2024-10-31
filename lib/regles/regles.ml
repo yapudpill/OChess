@@ -2,7 +2,7 @@ module type Sig = sig
   open Jeu
 
   type infos
-  val string_of_infos : infos -> string option
+  val string_of_infos : Partie.t * infos -> string option
 
   val init_partie : unit -> Partie.t*infos
   val init_pos : string -> Partie.t*infos
@@ -26,3 +26,4 @@ end
 module Basique : Sig = ReglesBasiques
 module RoiDeLaColine : Sig = ReglesRoiDeLaColine
 module TroisEchecs : Sig = ReglesTroisEchecs
+module Crazyhouse : Sig = ReglesCrazyhouse

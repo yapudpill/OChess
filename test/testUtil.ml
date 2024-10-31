@@ -34,6 +34,7 @@ let string_of_algebrique =
   | Grand_Roque -> "Grand roque"
   | Petit_Roque -> "Petit roque"
   | Arrivee (p, (x, y)) -> Printf.sprintf "%s (%d, %d)" (string_of_ptype p) x y
+  | Placement (p, (x, y)) -> Printf.sprintf "@%s (%d, %d)" (string_of_ptype p) x y
 
 let string_of_coup =
   let open Jeu.Partie in
@@ -41,6 +42,7 @@ let string_of_coup =
   | Grand_Roque -> "Grand roque"
   | Petit_Roque -> "Petit roque"
   | Mouvement ((x, y), (x', y')) -> Printf.sprintf "(%d, %d) -> (%d, %d)" x y x' y'
+  | Placement (p, (x, y)) -> Printf.sprintf "@%s (%d, %d)" (string_of_ptype p) x y
 
 let string_of_erreur =
   let open Jeu.Partie in
