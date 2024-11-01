@@ -11,7 +11,7 @@ let to_string = function
 | Arrivee (p, (x, y)) -> Printf.sprintf "%c%c%c" (Affichage.char_of_piece p) (char_of_int (97 + x)) (char_of_int (49 + y))
 
 let from_string str =
-  if str.[0] = '@' then
+  if String.length str > 0 &&  str.[0] = '@' then
     let p = if String.length str = 3 then Some Jeu.Piece.Pion else Affichage.piece_of_char str.[1] in
     let offset = if String.length str = 3 then 1 else 2 in
     let x = int_of_char str.[offset] - 97 in

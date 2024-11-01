@@ -6,5 +6,8 @@
   testRegles
   testPartie
   testEchiquier
+  testRoiDeLaColine
+  testTroisEchecs
+  testCrazyhouse
   testFen)
  (libraries alcotest jeu entreeSortie regles))

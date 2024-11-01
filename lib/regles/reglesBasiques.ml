@@ -181,8 +181,8 @@ let coup_of_algebrique partie = function
 
 (*** Jouer un coup ***)
 let jouer (partie, i) = function
-| Grand_Roque -> roque partie 1, i
-| Petit_Roque -> roque partie (-1), i
+| Grand_Roque -> roque partie (-1), i
+| Petit_Roque -> roque partie 1, i
 | Mouvement (dep, arr) ->
   if est_legal partie dep arr then
     let partie = deplacer_piece partie dep arr in
@@ -219,5 +219,5 @@ let mat partie =
     done;
     !mat
 
-let perdu (partie, ()) = mat partie
-let egalite (partie, ()) = pat partie
+let perdu (partie, _) = mat partie
+let egalite (partie, _) = pat partie

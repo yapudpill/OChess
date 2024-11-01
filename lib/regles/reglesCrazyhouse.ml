@@ -39,7 +39,6 @@ let coup_of_algebrique partie = function
   | _ -> Error (Ambigu deps)
 
 
-
 (*** Jouer un coup ***)
 
 let peut_poser (partie,infos) p (x, y) =
@@ -90,6 +89,5 @@ let jouer (partie,infos) = function
   else failwith "jouer"
   | Placement (p,arr) ->
   if peut_poser (partie,infos) p arr then
-    (print_endline "ca avance bien";
-    poser_piece (partie,infos) p arr)
+    poser_piece (partie,infos) p arr
   else failwith "jouer"
