@@ -22,9 +22,9 @@ let test_roque fen type_roque attendu  =
   Alcotest.(check bool) str attendu (peut_roquer p type_roque)
 
 let test_of_algebrique fen algebrique attendu =
-  let partie,_ = init_pos fen in
+  let p = init_pos fen in
   let str = Printf.sprintf "%s : conversion de %s en coup" fen (string_of_algebrique algebrique) in
-  Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique partie algebrique)
+  Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique p algebrique)
 
 let test_mat fen attendu  =
   Alcotest.(check bool) ("Mat " ^ fen) attendu (perdu (init_pos fen))

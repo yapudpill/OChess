@@ -161,7 +161,7 @@ let case_depart_pion partie (x,y) =
       else if y = 4 && contient partie.echiquier (partie.trait, Pion) (x, y+2) then [(x, y+2)]
       else []
 
-let coup_of_algebrique partie = function
+let coup_of_algebrique (partie, _) = function
 | EntreeSortie.Algebrique.Placement _ -> Error Invalide
 | EntreeSortie.Algebrique.Grand_Roque ->
   if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide

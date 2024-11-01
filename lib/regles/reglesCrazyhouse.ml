@@ -22,23 +22,6 @@ let init_pos fen =
 
 let init_partie () = init_pos "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
 
-let coup_of_algebrique partie = function
-| EntreeSortie.Algebrique.Placement (p,arr) -> Ok (Placement  (p,arr))
-| EntreeSortie.Algebrique.Grand_Roque ->
-  if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
-| EntreeSortie.Algebrique.Petit_Roque ->
-  if peut_roquer partie 1 then Ok Petit_Roque else Error Invalide
-| EntreeSortie.Algebrique.Arrivee (p, arr) ->
-  let potentiels = match p with
-  | Pion -> case_depart_pion partie arr
-  | _ -> case_depart_autre partie p arr in
-  let deps = List.filter (fun dep -> not @@ echec (deplacer_piece partie dep arr)) potentiels in
-  match deps with
-  | [] -> Error Invalide
-  | [dep] -> Ok (Mouvement (dep, arr))
-  | _ -> Error (Ambigu deps)
-
-
 (*** Jouer un coup ***)
 
 let peut_poser (partie,infos) p (x, y) =
@@ -91,3 +74,21 @@ let jouer (partie,infos) = function
   if peut_poser (partie,infos) p arr then
     poser_piece (partie,infos) p arr
   else failwith "jouer"
+
+
+let coup_of_algebrique (partie, infos) = function
+| EntreeSortie.Algebrique.Placement (p,arr) ->
+  if peut_poser (partie, infos) p arr then Ok (Placement  (p,arr)) else Error Invalide
+| EntreeSortie.Algebrique.Grand_Roque ->
+  if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
+| EntreeSortie.Algebrique.Petit_Roque ->
+  if peut_roquer partie 1 then Ok Petit_Roque else Error Invalide
+| EntreeSortie.Algebrique.Arrivee (p, arr) ->
+  let potentiels = match p with
+  | Pion -> case_depart_pion partie arr
+  | _ -> case_depart_autre partie p arr in
+  let deps = List.filter (fun dep -> not @@ echec (deplacer_piece partie dep arr)) potentiels in
+  match deps with
+  | [] -> Error Invalide
+  | [dep] -> Ok (Mouvement (dep, arr))
+  | _ -> Error (Ambigu deps)
