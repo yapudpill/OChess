@@ -4,7 +4,7 @@ open Jeu.Partie
 
 
 type infos = unit
-let string_of_infos () = None
+let string_of_infos _ = None
 
 (*** Création d'une partie ***)
 let init_pos fen =
@@ -161,7 +161,8 @@ let case_depart_pion partie (x,y) =
       else if y = 4 && contient partie.echiquier (partie.trait, Pion) (x, y+2) then [(x, y+2)]
       else []
 
-let coup_of_algebrique partie = function
+let coup_of_algebrique (partie, _) = function
+| EntreeSortie.Algebrique.Placement _ -> Error Invalide
 | EntreeSortie.Algebrique.Grand_Roque ->
   if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
 | EntreeSortie.Algebrique.Petit_Roque ->
@@ -180,13 +181,14 @@ let coup_of_algebrique partie = function
 
 (*** Jouer un coup ***)
 let jouer (partie, i) = function
-| Grand_Roque -> roque partie 1, i
-| Petit_Roque -> roque partie (-1), i
+| Grand_Roque -> roque partie (-1), i
+| Petit_Roque -> roque partie 1, i
 | Mouvement (dep, arr) ->
   if est_legal partie dep arr then
     let partie = deplacer_piece partie dep arr in
     {partie with trait = inverse partie.trait}, i
   else failwith "jouer"
+| Placement _ -> failwith "jouer"
 
 
 
@@ -217,5 +219,5 @@ let mat partie =
     done;
     !mat
 
-let perdu (partie, ()) = mat partie
-let egalite (partie, ()) = pat partie
+let perdu (partie, _) = mat partie
+let egalite (partie, _) = pat partie

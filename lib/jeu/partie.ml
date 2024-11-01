@@ -15,6 +15,7 @@ type erreur =
 type coup =
 | Petit_Roque
 | Grand_Roque
+| Placement of Piece.ptype * (int * int)
 | Mouvement of (int * int) * (int * int)
 
 let get_pos_roi partie = function

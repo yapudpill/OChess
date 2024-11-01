@@ -22,9 +22,9 @@ let test_roque fen type_roque attendu  =
   Alcotest.(check bool) str attendu (peut_roquer p type_roque)
 
 let test_of_algebrique fen algebrique attendu =
-  let partie,_ = init_pos fen in
+  let p = init_pos fen in
   let str = Printf.sprintf "%s : conversion de %s en coup" fen (string_of_algebrique algebrique) in
-  Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique partie algebrique)
+  Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique p algebrique)
 
 let test_mat fen attendu  =
   Alcotest.(check bool) ("Mat " ^ fen) attendu (perdu (init_pos fen))
@@ -214,7 +214,7 @@ let fin = [
 let petit_roque () =
   let open Echiquier in
   let p = init_pos "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -" in
-  let p,_ = jouer p Grand_Roque in
+  let p,_ = jouer p Petit_Roque in
   Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${6, 0};
   Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${5, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
@@ -222,7 +222,7 @@ let petit_roque () =
 let grand_roque () =
   let open Echiquier in
   let p = init_pos "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
-  let p,_ = jouer p Petit_Roque in
+  let p,_ = jouer p Grand_Roque in
   Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${2, 0};
   Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${3, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
@@ -259,7 +259,7 @@ let jouer = [
 ]
 
 
-let () = Alcotest.run "Mat et Pat" [
+let () = Alcotest.run "Regle Basique" [
   "Est attaquée", attaquee;
   "Coups légaux", legaux;
   "Peut Roquer", roque;
