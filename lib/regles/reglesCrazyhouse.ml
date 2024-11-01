@@ -79,8 +79,8 @@ let poser_piece (partie,infos) p pos =
   )
 
 let jouer (partie,infos) = function
-  | Grand_Roque -> roque partie 1,infos
-  | Petit_Roque -> roque partie (-1),infos
+  | Grand_Roque -> roque partie (-1), infos
+  | Petit_Roque -> roque partie 1, infos
   | Mouvement (dep, arr) ->
   if est_legal partie dep arr then
     let infos = maj_pieces (partie,infos) arr in

@@ -47,7 +47,7 @@ let rec boucle_principale (partie,infos) =
     print_newline ();
     print_echiquier ~couleur partie.echiquier;
     Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
-    Option.fold (R.string_of_infos (partie,infos) ) ~none:() ~some:(Printf.printf "Infos : %s\n");
+    Option.iter (Printf.printf "Infos : %s\n") (R.string_of_infos (partie,infos));
 
     let coup = J2.obtenir_coup partie in
     let partie,infos = R.jouer (partie,infos) coup in

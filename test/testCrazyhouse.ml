@@ -3,82 +3,84 @@ open TestUtil
 
 
 let test_perdu (partie,infos) attendu =
-  Alcotest.(check bool) "" attendu (perdu (partie,infos)  )
+  Alcotest.(check bool) "" attendu (perdu (partie,infos))
 
 let test_egalite fen attendu  =
   Alcotest.(check bool) ("Egalité " ^ fen) attendu (egalite (init_pos fen))
 
-(* let test_string (partie,infos) attendu =
-  Alcotest.(check string) "" attendu (Option.value (string_of_infos (partie, infos)) ~default:"") *)
+let test_string (partie,infos) attendu =
+  Alcotest.(check (option string)) "" attendu (string_of_infos (partie, infos))
 
 
 (*** to_string ***)
 
-(* let to_string_noir_1 () =
-  test_string (init_partie ()) "echecs blanc : 0, echecs noir : 0";
+let to_string_noir_1 () =
   let p = init_partie () in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 1), (4, 3))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 6), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 3), (3, 4))) in
-  test_string p ""
+  test_string p (Some "");
+  let p = jouer p (Mouvement ((4, 1), (4, 3))) in
+  let p = jouer p (Mouvement ((3, 6), (3, 4))) in
+  let p = jouer p (Mouvement ((4, 3), (3, 4))) in
+  test_string p (Some "")
 
 let to_string_noir_2 () =
-  test_string (init_partie ()) "echecs blanc : 0, echecs noir : 0";
   let p = init_partie () in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 1), (4, 3))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 6), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 3), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 7), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((1, 0), (2, 2))) in
-  test_string p "p"
+  test_string p (Some "");
+  let p = jouer p (Mouvement ((4, 1), (4, 3))) in
+  let p = jouer p (Mouvement ((3, 6), (3, 4))) in
+  let p = jouer p (Mouvement ((4, 3), (3, 4))) in
+  let p = jouer p (Mouvement ((3, 7), (3, 4))) in
+  let p = jouer p (Mouvement ((1, 0), (2, 2))) in
+  test_string p (Some "P")
 
 
 
 let to_string_blanc () =
-  test_string (init_partie ()) "echecs blanc : 0, echecs noir : 0";
   let p = init_partie () in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 1), (4, 3))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 6), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 3), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 7), (3, 4))) in
-  test_string p "P"
+  test_string p (Some "");
+  let p = jouer p (Mouvement ((4, 1), (4, 3))) in
+  let p = jouer p (Mouvement ((3, 6), (3, 4))) in
+  let p = jouer p (Mouvement ((4, 3), (3, 4))) in
+  let p = jouer p (Mouvement ((3, 7), (3, 4))) in
+  test_string p (Some "P")
 
 
 let string_info = [
   "string info blanc", `Quick, to_string_blanc;
   "string info noir", `Quick, to_string_noir_1;
   "string info noir", `Quick, to_string_noir_2;
-] *)
+]
 
 (*** Roque ***)
 
 
-(* let test_petit_roque () =
+let test_petit_roque () =
+  let open Jeu.Echiquier in
   let p = init_partie () in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((4, 1), (4, 3))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 6), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((6, 0), (5, 2))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((0, 6), (0, 5))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((5, 0), (4, 1))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((0, 5), (0, 4))) in
-  let p,_ = Regles.Crazyhouse.jouer p Petit_Roque in
-  Alcotest.check case "Coup valide"   (Some (Blanc, Roi)) p.echiquier.${6, 0};
-  Alcotest.check case "Coup valide"   (Some (Blanc, Tour)) p.echiquier.${5, 0}
+  let p = jouer p (Mouvement ((4, 1), (4, 3))) in
+  let p = jouer p (Mouvement ((3, 6), (3, 4))) in
+  let p = jouer p (Mouvement ((6, 0), (5, 2))) in
+  let p = jouer p (Mouvement ((0, 6), (0, 5))) in
+  let p = jouer p (Mouvement ((5, 0), (4, 1))) in
+  let p = jouer p (Mouvement ((0, 5), (0, 4))) in
+  let p,_ = jouer p Petit_Roque in
+  Alcotest.check case "Coup valide" (Some (Blanc, Roi))  p.echiquier.${6, 0};
+  Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p.echiquier.${5, 0}
 
 
 let test_grand_roque () =
+  let open Jeu.Echiquier in
   let p = init_partie () in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 1), (3, 3))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 6), (3, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((1, 0), (2, 2))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((0, 6), (0, 5))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((2, 0), (5, 3))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((0, 5), (0, 4))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((3, 0), (3, 1))) in
-  let p = Regles.Crazyhouse.jouer p (Mouvement ((0, 4), (0, 3))) in
-  let p,_ = Regles.Crazyhouse.jouer p (Grand_Roque) in
-  Alcotest.check case "Coup valide"   (Some (Blanc, Roi)) p.echiquier.${2, 0};
-  Alcotest.check case "Coup valide"   (Some (Blanc, Tour)) p.echiquier.${3, 0} *)
+  let p = jouer p (Mouvement ((3, 1), (3, 3))) in
+  let p = jouer p (Mouvement ((3, 6), (3, 4))) in
+  let p = jouer p (Mouvement ((1, 0), (2, 2))) in
+  let p = jouer p (Mouvement ((0, 6), (0, 5))) in
+  let p = jouer p (Mouvement ((2, 0), (5, 3))) in
+  let p = jouer p (Mouvement ((0, 5), (0, 4))) in
+  let p = jouer p (Mouvement ((3, 0), (3, 1))) in
+  let p = jouer p (Mouvement ((0, 4), (0, 3))) in
+  let p,_ = jouer p (Grand_Roque) in
+  Alcotest.check case "Coup valide" (Some (Blanc, Roi))  p.echiquier.${2, 0};
+  Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p.echiquier.${3, 0}
 
 
 (*** Jouer **)
@@ -104,8 +106,8 @@ let test_placement () =
 
 let jouer = [
   "Placement", `Quick,test_placement;
-  (* "Petit roque", `Quick,test_petit_roque;
-  "Grand roque", `Quick,test_grand_roque; *)
+  "Petit roque", `Quick,test_petit_roque;
+  "Grand roque", `Quick,test_grand_roque;
 
 ]
 
@@ -146,8 +148,8 @@ let fin = [
   "egalite", `Quick, egalite;
 ]
 
-let () = Alcotest.run "Regles Trois Echecs" [
-  (* "String info", string_info; *)
+let () = Alcotest.run "Regles Crazyhouse" [
+  "String info", string_info;
   "Jouer", jouer;
   "Fin de partie", fin;
 ]
