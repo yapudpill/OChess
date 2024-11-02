@@ -6,12 +6,15 @@ include ReglesBasiques
 
 type infos = {pieces_blanches : Jeu.Piece.ptype list; pieces_noires : Jeu.Piece.ptype list}
 
-let string_of_infos (partie,infos) =
-  let pieces = match partie.trait with
-    | Blanc -> infos.pieces_blanches
-    | Noir -> infos.pieces_noires
+let get_main (partie, infos) = match partie.trait with
+| Blanc -> infos.pieces_blanches
+| Noir -> infos.pieces_noires
+
+let string_of_infos etat =
+  let piece_strs = List.map
+    (fun p -> String.make 1 (EntreeSortie.Affichage.char_of_piece p))
+    (get_main etat)
   in
-  let piece_strs = List.map (fun p -> String.make 1 (EntreeSortie.Affichage.char_of_piece p)) pieces in
   Some ("pièces en main : " ^ String.concat ", " piece_strs)
 
 
@@ -41,12 +44,7 @@ let poser_piece (partie,infos) p pos =
   | Noir ->  {infos with pieces_noires = supprimer p infos.pieces_noires }
 
 let peut_poser (partie, infos) p (x, y) =
-  (* Vérifie si le joueur possède la pièce à placer *)
-  let liste_pieces = match partie.trait with
-    | Blanc -> infos.pieces_blanches
-    | Noir -> infos.pieces_noires
-  in
-  List.mem p liste_pieces
+  List.mem p (get_main (partie, infos))
   && est_vide partie.echiquier.${x, y}
   && (p <> Pion || (x <> 0 && x <> 7))
   && let partie, _ = poser_piece (partie, infos) p (x, y) in not (echec partie)
@@ -90,3 +88,27 @@ let coup_of_algebrique (partie, infos) = function
   | [] -> Error Invalide
   | [dep] -> Ok (Mouvement (dep, arr))
   | _ -> Error (Ambigu deps)
+
+let mat (partie, infos) =
+  let roi = get_pos_roi partie partie.trait in
+  let a_defendre = attaquee_dir partie partie.trait roi in
+  match a_defendre with
+  | [] -> false
+  | _ :: _ :: _ -> coups_legaux partie roi = []
+  | [ dir ] ->
+    coups_legaux partie roi = []
+    && (* on ne peut pas s'interposer en posant une pièce *)
+    let main = get_main (partie, infos) in
+    List.for_all (fun pos ->
+      List.for_all (fun p -> not @@ peut_poser (partie, infos) p pos) main
+    ) dir
+    && (* on ne peut pas s'interposer en déplaçant une pièce *)
+    let mat = ref true in
+    for x = 0 to 7 do
+      for y = 0 to 7 do
+        mat := !mat && List.for_all (fun x -> not (List.mem x dir)) (coups_legaux partie (x,y))
+      done
+    done;
+    !mat
+
+let perdu = mat
