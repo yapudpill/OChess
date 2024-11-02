@@ -1,6 +1,6 @@
 (lang dune 3.16)
 
-(name OChess)
+(name ochess)
 
 (generate_opam_files true)
 
@@ -14,7 +14,7 @@
 (maintainers "Marc Robin" "Anthony Fernandes")
 
 (package
- (name OChess)
+ (name ochess)
  (synopsis "Des échecs dans le terminal")
  (description "Une implémentations en OCaml d'un jeu d'échecs dans le terminal proposant plusieurs vairantes des règles.")
  (depends
