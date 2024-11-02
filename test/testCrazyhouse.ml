@@ -16,32 +16,32 @@ let test_string (partie,infos) attendu =
 
 let to_string_noir_1 () =
   let p = init_partie () in
-  test_string p (Some "");
+  test_string p (Some "pièces en main : ");
   let p = jouer p (Mouvement ((4, 1), (4, 3))) in
   let p = jouer p (Mouvement ((3, 6), (3, 4))) in
   let p = jouer p (Mouvement ((4, 3), (3, 4))) in
-  test_string p (Some "")
+  test_string p (Some "pièces en main : ")
 
 let to_string_noir_2 () =
   let p = init_partie () in
-  test_string p (Some "");
+  test_string p (Some "pièces en main : ");
   let p = jouer p (Mouvement ((4, 1), (4, 3))) in
   let p = jouer p (Mouvement ((3, 6), (3, 4))) in
   let p = jouer p (Mouvement ((4, 3), (3, 4))) in
   let p = jouer p (Mouvement ((3, 7), (3, 4))) in
   let p = jouer p (Mouvement ((1, 0), (2, 2))) in
-  test_string p (Some "P")
+  test_string p (Some "pièces en main : P")
 
 
 
 let to_string_blanc () =
   let p = init_partie () in
-  test_string p (Some "");
+  test_string p (Some "pièces en main : ");
   let p = jouer p (Mouvement ((4, 1), (4, 3))) in
   let p = jouer p (Mouvement ((3, 6), (3, 4))) in
   let p = jouer p (Mouvement ((4, 3), (3, 4))) in
   let p = jouer p (Mouvement ((3, 7), (3, 4))) in
-  test_string p (Some "P")
+  test_string p (Some "pièces en main : P")
 
 
 let string_info = [
