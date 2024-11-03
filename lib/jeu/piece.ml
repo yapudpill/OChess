@@ -78,20 +78,18 @@ let mouv_dame_dir pos = mouv_tour_dir pos @ mouv_fou_dir pos
 let mouv_dame pos = mouv_tour pos @ mouv_fou pos
 
 (* Fonctions génériques *)
-let mouvement_dir (c, t) =
-  match t with
-  | Roi -> mouv_roi_dir
-  | Dame -> mouv_dame_dir
-  | Fou -> mouv_fou_dir
-  | Tour -> mouv_tour_dir
-  | Cavalier -> mouv_cav_dir
-  | Pion -> mouv_pion_dir c
+let mouvement_dir (c, t) = match t with
+| Roi -> mouv_roi_dir
+| Dame -> mouv_dame_dir
+| Fou -> mouv_fou_dir
+| Tour -> mouv_tour_dir
+| Cavalier -> mouv_cav_dir
+| Pion -> mouv_pion_dir c
 
-let mouvement (c, t) =
-  match t with
-  | Roi -> mouv_roi
-  | Dame -> mouv_dame
-  | Fou -> mouv_fou
-  | Tour -> mouv_tour
-  | Cavalier -> mouv_cav
-  | Pion -> mouv_pion c
+let mouvement (c, t) = match t with
+| Roi -> mouv_roi
+| Dame -> mouv_dame
+| Fou -> mouv_fou
+| Tour -> mouv_tour
+| Cavalier -> mouv_cav
+| Pion -> mouv_pion c

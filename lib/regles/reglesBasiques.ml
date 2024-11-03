@@ -19,10 +19,9 @@ let filter_saute_pas echiquier couleur coups_dir =
   let rec filter acc = function
   | [] ->  acc
   | h :: t ->
-    begin match echiquier.${h} with
+    match echiquier.${h} with
     | None -> filter (h :: acc) t
     | Some (c, _) -> if c <> couleur then h :: acc else acc
-    end
   in
   List.map (filter []) coups_dir
 
@@ -73,12 +72,12 @@ let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
   echiquier.${dep} <- None;
 
   (* Prendre en passant *)
-  if Option.fold partie.en_passant ~none:false ~some:((=) arr) then begin
+  if Option.fold partie.en_passant ~none:false ~some:((=) arr) then (
     match echiquier.${arr} with
     | Some (Blanc, Pion) -> echiquier.${x', y' - 1} <- None
     | Some (Noir, Pion)  -> echiquier.${x', y' + 1} <- None
     | _ -> ()
-  end;
+  );
 
   (* Avance de 2 case *)
   let en_passant = match echiquier.${arr} with
@@ -88,11 +87,10 @@ let deplacer_piece partie ((x, y) as dep) ( (x', y') as arr)  =
   in
 
   (* Promotion *)
-  begin match echiquier.${arr} with
+  (match echiquier.${arr} with
     | Some (Blanc, Pion) -> if y' = 7 then echiquier.${arr} <- Some (Blanc, Dame)
     | Some (Noir, Pion) -> if y' = 0 then echiquier.${arr} <- Some (Noir, Dame)
-    | _ -> ()
-  end;
+    | _ -> ());
 
   (* Roque *)
   let (g, d) = get_roque partie partie.trait in

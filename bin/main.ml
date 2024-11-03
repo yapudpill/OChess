@@ -43,7 +43,7 @@ let rec boucle_principale (partie, infos) =
 
   if R.egalite (partie, infos) then (partie, None)
   else if R.perdu (partie, infos) then (partie, Some Jeu.Piece.Blanc)
-  else begin
+  else (
     print_newline ();
     print_echiquier ~couleur partie.echiquier;
     Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
@@ -54,15 +54,15 @@ let rec boucle_principale (partie, infos) =
 
     if R.egalite (partie, infos) then (partie, None)
     else if R.perdu (partie, infos) then (partie, Some Jeu.Piece.Noir)
-    else begin
+    else (
       print_newline ();
       print_echiquier ~couleur partie.echiquier;
       Printf.printf "(Appuyer sur entrée pour passer au tour suivant)";
       ignore (read_line ());
 
       boucle_principale (partie, infos)
-    end
-  end
+    )
+  )
 
 let (partie, gagnant) = boucle_principale (R.init_partie ())
 
