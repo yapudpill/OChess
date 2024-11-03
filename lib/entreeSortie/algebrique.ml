@@ -21,15 +21,18 @@ let from_string = function
 | "o-o" | "O-O" -> Some Petit_Roque
 | "o-o-o" | "O-O-O" -> Some Grand_Roque
 | str ->
-  let len = String.length str in
-  if len < 2 || len > 4 || (len = 4 && str.[0] <> '@') then None
-  else
-    let placement = str.[0] = '@' in
-    let x = int_of_char (Char.lowercase_ascii str.[len - 2]) - 97 in  (* 97 est le code ascii de 'a' *)
-    let y = int_of_char str.[len - 1] - 49 in  (* 49 est le code ascii de '1' *)
-    let p =
-      if len = 2 || (len = 3 && placement) then Some Jeu.Piece.Pion
-      else Affichage.piece_of_char (Char.uppercase_ascii str.[len - 3]) in
-    if 0 <= x && x <= 7 && 0 <= y && y <= 7 then
-      Option.map (fun p -> if placement then Placement (p, (x, y)) else Arrivee (p, (x, y))) p
-    else None
+    let len = String.length str in
+    if len < 2 || len > 4 || (len = 4 && str.[0] <> '@') then None
+    else
+      let placement = str.[0] = '@' in
+      let x = int_of_char (Char.lowercase_ascii str.[len - 2]) - 97 in (* 97 est le code ascii de 'a' *)
+      let y = int_of_char str.[len - 1] - 49 in (* 49 est le code ascii de '1' *)
+      let p =
+        if len = 2 || (len = 3 && placement) then Some Jeu.Piece.Pion
+        else Affichage.piece_of_char (Char.uppercase_ascii str.[len - 3])
+      in
+      if 0 <= x && x <= 7 && 0 <= y && y <= 7 then
+        Option.map
+          (fun p -> if placement then Placement (p, (x, y)) else Arrivee (p, (x, y)))
+          p
+      else None

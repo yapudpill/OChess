@@ -8,12 +8,11 @@ let inverse = function
 | Blanc -> Noir
 | Noir -> Blanc
 
-
-(* Mouvements par défauts *)
-
 let sur_echiquier (x, y) = 0 <= x && x < 8 && 0 <= y && y < 8
 
 let singleton x = [x]
+
+(* Mouvements par défauts *)
 
 (* Roi *)
 let mouv_roi (x, y) = List.filter sur_echiquier [
@@ -37,13 +36,14 @@ let mouv_cav_dir pos = List.map singleton (mouv_cav pos)
 
 (* Pion *)
 let mouv_pion_dir c (x, y) =
-  let devant, diagonale = match c with
-  | Blanc ->
-    (if y = 1 then [ (x, y+1); (x, y+2) ] else if y < 7 then [ (x, y+1) ] else []),
-    List.filter sur_echiquier [ (x-1, y+1); (x+1, y+1) ]
-  | Noir  ->
-    (if y = 6 then [ (x, y-1); (x, y-2) ] else if y > 0 then [ (x, y-1) ] else []),
-    List.filter sur_echiquier [ (x-1, y-1); (x+1, y-1) ]
+  let devant, diagonale =
+    match c with
+    | Blanc ->
+        (if y = 1 then [ (x, y+1); (x, y+2) ] else if y < 7 then [ (x, y+1) ] else []),
+        List.filter sur_echiquier [ (x-1, y+1); (x+1, y+1) ]
+    | Noir  ->
+        (if y = 6 then [ (x, y-1); (x, y-2) ] else if y > 0 then [ (x, y-1) ] else []),
+        List.filter sur_echiquier [ (x-1, y-1); (x+1, y-1) ]
   in
   devant :: List.map singleton diagonale
 
@@ -78,18 +78,20 @@ let mouv_dame_dir pos = mouv_tour_dir pos @ mouv_fou_dir pos
 let mouv_dame pos = mouv_tour pos @ mouv_fou pos
 
 (* Fonctions génériques *)
-let mouvement_dir (c, t) = match t with
-| Roi -> mouv_roi_dir
-| Dame -> mouv_dame_dir
-| Fou -> mouv_fou_dir
-| Tour -> mouv_tour_dir
-| Cavalier -> mouv_cav_dir
-| Pion -> mouv_pion_dir c
+let mouvement_dir (c, t) =
+  match t with
+  | Roi -> mouv_roi_dir
+  | Dame -> mouv_dame_dir
+  | Fou -> mouv_fou_dir
+  | Tour -> mouv_tour_dir
+  | Cavalier -> mouv_cav_dir
+  | Pion -> mouv_pion_dir c
 
-let mouvement (c, t) = match t with
-| Roi -> mouv_roi
-| Dame -> mouv_dame
-| Fou -> mouv_fou
-| Tour -> mouv_tour
-| Cavalier -> mouv_cav
-| Pion -> mouv_pion c
+let mouvement (c, t) =
+  match t with
+  | Roi -> mouv_roi
+  | Dame -> mouv_dame
+  | Fou -> mouv_fou
+  | Tour -> mouv_tour
+  | Cavalier -> mouv_cav
+  | Pion -> mouv_pion c

@@ -8,28 +8,36 @@ open TestUtil
 (*** Fonctions de test ***)
 let test_attaquee_dir fen (x, y) col attendu =
   let e = creer_partie_fen fen in
-  let str = Printf.sprintf "%s : (%d, %d) attaquée par %s" fen x y (string_of_couleur col) in
+  let str =
+    Printf.sprintf "%s : (%d, %d) attaquée par %s" fen x y
+      (string_of_couleur col)
+  in
   Alcotest.(check mouv_list_list) str attendu (attaquee_dir e col (x, y))
 
 let test_coups_legaux fen (x, y) attendu =
-  let p,_ = init_pos fen in
+  let p, _ = init_pos fen in
   let str = Printf.sprintf "%s : coups légaux depuis (%d, %d)" fen x y in
   Alcotest.(check mouv_list) str attendu (coups_legaux p (x, y))
 
-let test_roque fen type_roque attendu  =
+let test_roque fen type_roque attendu =
   let p = creer_partie_fen fen in
   let str = Printf.sprintf "%s : roque de type %d" fen type_roque in
   Alcotest.(check bool) str attendu (peut_roquer p type_roque)
 
 let test_of_algebrique fen algebrique attendu =
   let p = init_pos fen in
-  let str = Printf.sprintf "%s : conversion de %s en coup" fen (string_of_algebrique algebrique) in
-  Alcotest.(check (result coup erreur)) str attendu (coup_of_algebrique p algebrique)
+  let str =
+    Printf.sprintf "%s : conversion de %s en coup" fen
+      (string_of_algebrique algebrique)
+  in
+  Alcotest.(check (result coup erreur))
+    str attendu
+    (coup_of_algebrique p algebrique)
 
-let test_mat fen attendu  =
+let test_mat fen attendu =
   Alcotest.(check bool) ("Mat " ^ fen) attendu (perdu (init_pos fen))
 
-let test_pat fen attendu  =
+let test_pat fen attendu =
   Alcotest.(check bool) ("Pat " ^ fen) attendu (egalite (init_pos fen))
 
 
@@ -127,43 +135,68 @@ let roque = [
 (*** Coup of algébrique ***)
 let coups_pion () =
   test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
-    (Arrivee (Pion, (4,3))) (Ok (Mouvement ((4,1), (4,3))));
-  test_of_algebrique "r2qk2r/pp1b1ppp/1Pnbpn2/3p2B1/Pp1PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
-    (Arrivee (Pion, (0,2))) (Ok (Mouvement ((1,3), (0,2))));
+    (Arrivee (Pion, (4, 3)))
+    (Ok (Mouvement ((4, 1), (4, 3))));
+  test_of_algebrique
+    "r2qk2r/pp1b1ppp/1Pnbpn2/3p2B1/Pp1PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
+    (Arrivee (Pion, (0, 2)))
+    (Ok (Mouvement ((1, 3), (0, 2))));
   test_of_algebrique "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq -"
-    (Arrivee (Pion, (4,4))) (Ok (Mouvement ((4,6), (4,4))));
+    (Arrivee (Pion, (4, 4)))
+    (Ok (Mouvement ((4, 6), (4, 4))));
   test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
-    (Arrivee (Pion, (4,2))) (Ok (Mouvement ((4,1), (4,2))));
+    (Arrivee (Pion, (4, 2)))
+    (Ok (Mouvement ((4, 1), (4, 2))));
   test_of_algebrique "8/3N1pkp/4p1p1/3pb3/8/1P3P2/4Q1PP/R4K2 b - -"
-    (Arrivee (Pion, (3,3))) (Ok (Mouvement ((3,4), (3,3))));
+    (Arrivee (Pion, (3, 3)))
+    (Ok (Mouvement ((3, 4), (3, 3))));
   test_of_algebrique "8/3N1pkp/4p3/3pb3/5pP1/1P3P2/4Q2P/R4K2 b - g3"
-    (Arrivee (Pion, (6,2))) (Ok (Mouvement ((5,3), (6,2))));
+    (Arrivee (Pion, (6, 2)))
+    (Ok (Mouvement ((5, 3), (6, 2))));
   test_of_algebrique "7k/8/8/1pP5/8/8/8/7K w - b6"
-    (Arrivee (Pion, (1,5))) (Ok (Mouvement ((2, 4), (1,5))));
-  test_of_algebrique "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R b K -"
-    (Arrivee (Pion, (1,5))) (Error (Ambigu [(0,6); (2,6)]));
+    (Arrivee (Pion, (1, 5)))
+    (Ok (Mouvement ((2, 4), (1, 5))));
+  test_of_algebrique
+    "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R b K -"
+    (Arrivee (Pion, (1, 5)))
+    (Error (Ambigu [ 0, 6; 2, 6 ]));
   test_of_algebrique "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 w q -"
-    (Arrivee (Pion, (0,0))) (Error Invalide);
+    (Arrivee (Pion, (0, 0)))
+    (Error Invalide);
   test_of_algebrique "rnbqkbn1/pppppppp/6r1/8/2R1P3/8/PPPP1PPR/1NBQKBN1 b q -"
-    (Arrivee (Pion, (7,7))) (Error Invalide)
+    (Arrivee (Pion, (7, 7)))
+    (Error Invalide)
 
 let coups_autre () =
   test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq -"
-    (Arrivee (Cavalier, (5,2))) (Ok (Mouvement ((6,0), (5,2))));
-  test_of_algebrique "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R w K -"
-    (Arrivee (Fou, (6,4))) (Ok (Mouvement ((2,0), (6,4))));
-  test_of_algebrique "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R w - -"
-    (Arrivee (Dame, (3,5))) (Ok (Mouvement ((0,2), (3,5))));
-  test_of_algebrique "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
-    (Arrivee (Tour, (2,7))) (Ok (Mouvement ((0,7), (2,7))));
+    (Arrivee (Cavalier, (5, 2)))
+    (Ok (Mouvement ((6, 0), (5, 2))));
+  test_of_algebrique
+    "r1bqkbnr/ppp2ppp/1Pn1p3/3p4/3P4/5N2/P1P1PPPP/RNBQKB1R w K -"
+    (Arrivee (Fou, (6, 4)))
+    (Ok (Mouvement ((2, 0), (6, 4))));
+  test_of_algebrique
+    "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R w - -"
+    (Arrivee (Dame, (3, 5)))
+    (Ok (Mouvement ((0, 2), (3, 5))));
+  test_of_algebrique
+    "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
+    (Arrivee (Tour, (2, 7)))
+    (Ok (Mouvement ((0, 7), (2, 7))));
   test_of_algebrique "2bqkbnr/p2ppppp/R7/1Pp5/8/8/2PPPPP1/1NBQKBNR w Kk c6"
-    (Arrivee (Tour, (2,5))) (Ok (Mouvement ((0,5), (2,5))));
-  test_of_algebrique "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
-    (Arrivee (Roi, (4,6))) (Ok (Mouvement ((4,7), (4,6))));
+    (Arrivee (Tour, (2, 5)))
+    (Ok (Mouvement ((0, 5), (2, 5))));
+  test_of_algebrique
+    "r2qk2r/pppb1ppp/1Pnbpn2/3p2B1/P2PP3/Q1N2N2/2P1BPPP/R3K2R b - -"
+    (Arrivee (Roi, (4, 6)))
+    (Ok (Mouvement ((4, 7), (4, 6))));
   test_of_algebrique "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR b KQkq -"
-    (Arrivee (Cavalier, (5,2))) (Error Invalide);
-  test_of_algebrique "r1bqkbnr/ppp2ppp/2n1p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQk -"
-    (Arrivee (Cavalier, (3,1))) (Error (Ambigu [(5,2); (1,0)]))
+    (Arrivee (Cavalier, (5, 2)))
+    (Error Invalide);
+  test_of_algebrique
+    "r1bqkbnr/ppp2ppp/2n1p3/3p4/3P4/5N2/PPP1PPPP/RNBQKB1R w KQk -"
+    (Arrivee (Cavalier, (3, 1)))
+    (Error (Ambigu [ 5, 2; 1, 0 ]))
 
 let coups_roque () =
   test_of_algebrique "4k2r/8/8/8/8/8/8/R3K3 w Qk -" Grand_Roque (Ok Grand_Roque);
@@ -174,7 +207,7 @@ let coups_roque () =
 let coups = [
   "Pion",   `Quick, coups_pion;
   "Autres", `Quick, coups_autre;
-  "Roque",  `Quick, coups_roque
+  "Roque",  `Quick, coups_roque;
 ]
 
 (*** Fin de partie ***)
@@ -209,46 +242,53 @@ let fin = [
   "Pat", `Quick, pat;
 ]
 
-(*** Jouer **)
 
+(*** Jouer **)
 let petit_roque () =
   let open Echiquier in
-  let p = init_pos "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -" in
-  let p,_ = jouer p Petit_Roque in
-  Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${6, 0};
+  let p =
+    init_pos
+      "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w KQkq -"
+  in
+  let p, _ = jouer p Petit_Roque in
+  Alcotest.check case "Roi" (Some (Blanc, Roi)) p.echiquier.${6, 0};
   Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${5, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let grand_roque () =
   let open Echiquier in
-  let p = init_pos "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -" in
-  let p,_ = jouer p Grand_Roque in
-  Alcotest.check case "Roi"  (Some (Blanc, Roi))  p.echiquier.${2, 0};
+  let p =
+    init_pos "r4rk1/pppbqppp/2n1pn2/3p4/1bPP1B2/2N1PN2/PPQ2PPP/R3KB1R w KQq -"
+  in
+  let p, _ = jouer p Grand_Roque in
+  Alcotest.check case "Roi" (Some (Blanc, Roi)) p.echiquier.${2, 0};
   Alcotest.check case "Tour" (Some (Blanc, Tour)) p.echiquier.${3, 0};
   Alcotest.(check (pair bool bool)) "Roque" (false, false) (Partie.get_roque p Blanc)
 
 let roque_invalide () =
-  let p = init_pos "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w - -" in
+  let p =
+    init_pos "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2B1P3/2N2N2/PPPP1PPP/R1BQK2R w - -"
+  in
   Alcotest.check_raises "Invalide" (Failure "roque")
     (fun () -> ignore @@ jouer p Petit_Roque)
 
 let test_jouer_blanc () =
   let open Echiquier in
   let p = init_pos "8/1P4k1/8/8/4r3/4R3/8/4K3 w - -" in
-  let p1,_ = jouer p (Mouvement ((4, 2), (4, 3))) in
-  let p2,_ = jouer p (Mouvement ((1, 6), (1, 7))) in
+  let p1, _ = jouer p (Mouvement ((4, 2), (4, 3))) in
+  let p2, _ = jouer p (Mouvement ((1, 6), (1, 7))) in
   Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p1.echiquier.${4, 3};
-  Alcotest.check case "Promotion"   (Some (Blanc, Dame)) p2.echiquier.${1, 7};
+  Alcotest.check case "Promotion" (Some (Blanc, Dame)) p2.echiquier.${1, 7};
   Alcotest.check_raises "Invalide" (Failure "jouer")
     (fun () -> ignore @@ jouer p (Mouvement ((4, 2), (3, 2))))
 
 let test_jouer_noir () =
   let open Echiquier in
   let p = init_pos "8/6k1/8/8/4r3/4R3/1p6/4K3 b - -" in
-  let p1,_ = jouer p (Mouvement ((4, 3), (5, 3))) in
-  let p2,_ = jouer p (Mouvement ((1, 1), (1, 0))) in
+  let p1, _ = jouer p (Mouvement ((4, 3), (5, 3))) in
+  let p2, _ = jouer p (Mouvement ((1, 1), (1, 0))) in
   Alcotest.check case "Coup valide" (Some (Noir, Tour)) p1.echiquier.${5, 3};
-  Alcotest.check case "Promotion"   (Some (Noir, Dame)) p2.echiquier.${1, 0}
+  Alcotest.check case "Promotion" (Some (Noir, Dame)) p2.echiquier.${1, 0}
 
 let jouer = [
   "Grand roque",    `Quick, grand_roque;

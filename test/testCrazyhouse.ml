@@ -1,19 +1,17 @@
 open Regles.Crazyhouse
 open TestUtil
 
+let test_perdu (partie, infos) attendu =
+  Alcotest.(check bool) "" attendu (perdu (partie, infos))
 
-let test_perdu (partie,infos) attendu =
-  Alcotest.(check bool) "" attendu (perdu (partie,infos))
-
-let test_egalite fen attendu  =
+let test_egalite fen attendu =
   Alcotest.(check bool) ("Egalité " ^ fen) attendu (egalite (init_pos fen))
 
-let test_string (partie,infos) attendu =
+let test_string (partie, infos) attendu =
   Alcotest.(check (option string)) "" attendu (string_of_infos (partie, infos))
 
 
 (*** to_string ***)
-
 let to_string_noir_1 () =
   let p = init_partie () in
   test_string p (Some "pièces en main : ");
@@ -32,8 +30,6 @@ let to_string_noir_2 () =
   let p = jouer p (Mouvement ((1, 0), (2, 2))) in
   test_string p (Some "pièces en main : P")
 
-
-
 let to_string_blanc () =
   let p = init_partie () in
   test_string p (Some "pièces en main : ");
@@ -43,16 +39,14 @@ let to_string_blanc () =
   let p = jouer p (Mouvement ((3, 7), (3, 4))) in
   test_string p (Some "pièces en main : P")
 
-
 let string_info = [
   "string info blanc", `Quick, to_string_blanc;
   "string info noir", `Quick, to_string_noir_1;
   "string info noir", `Quick, to_string_noir_2;
 ]
 
+
 (*** Roque ***)
-
-
 let test_petit_roque () =
   let open Jeu.Echiquier in
   let p = init_partie () in
@@ -62,10 +56,9 @@ let test_petit_roque () =
   let p = jouer p (Mouvement ((0, 6), (0, 5))) in
   let p = jouer p (Mouvement ((5, 0), (4, 1))) in
   let p = jouer p (Mouvement ((0, 5), (0, 4))) in
-  let p,_ = jouer p Petit_Roque in
-  Alcotest.check case "Coup valide" (Some (Blanc, Roi))  p.echiquier.${6, 0};
+  let p, _ = jouer p Petit_Roque in
+  Alcotest.check case "Coup valide" (Some (Blanc, Roi)) p.echiquier.${6, 0};
   Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p.echiquier.${5, 0}
-
 
 let test_grand_roque () =
   let open Jeu.Echiquier in
@@ -78,43 +71,36 @@ let test_grand_roque () =
   let p = jouer p (Mouvement ((0, 5), (0, 4))) in
   let p = jouer p (Mouvement ((3, 0), (3, 1))) in
   let p = jouer p (Mouvement ((0, 4), (0, 3))) in
-  let p,_ = jouer p (Grand_Roque) in
-  Alcotest.check case "Coup valide" (Some (Blanc, Roi))  p.echiquier.${2, 0};
+  let p, _ = jouer p Grand_Roque in
+  Alcotest.check case "Coup valide" (Some (Blanc, Roi)) p.echiquier.${2, 0};
   Alcotest.check case "Coup valide" (Some (Blanc, Tour)) p.echiquier.${3, 0}
 
 
 (*** Jouer **)
-
-
-
 let test_placement () =
   let open Jeu.Echiquier in
   let p = init_partie () in
-  let p1,infos = jouer p (Mouvement ((4, 1), (4, 3))) in
-  let p2,infos = jouer (p1,infos) (Mouvement ((3, 6), (3, 4))) in
+  let p1, infos = jouer p (Mouvement ((4, 1), (4, 3))) in
+  let p2, infos = jouer (p1, infos) (Mouvement ((3, 6), (3, 4))) in
   Alcotest.check case "Coup valide" (Some (Blanc, Pion)) p1.echiquier.${4, 3};
-  Alcotest.check case "Coup Valide"   (Some (Noir, Pion)) p2.echiquier.${3, 4};
-  let p1,infos = jouer (p2,infos) (Mouvement ((4, 3), (3, 4))) in
+  Alcotest.check case "Coup Valide" (Some (Noir, Pion)) p2.echiquier.${3, 4};
+  let p1, infos = jouer (p2, infos) (Mouvement ((4, 3), (3, 4))) in
   Alcotest.check case "Coup valide" (Some (Blanc, Pion)) p1.echiquier.${3, 4};
-  let p2,infos = Regles.Crazyhouse.jouer (p1,infos) (Mouvement ((3, 7), (3, 4))) in
-  Alcotest.check case "Coup valide"   (Some (Noir, Dame)) p2.echiquier.${3, 4};
-  let p1,infos = jouer (p2,infos) (Placement (Pion, (4, 2))) in
+  let p2, infos = Regles.Crazyhouse.jouer (p1, infos) (Mouvement ((3, 7), (3, 4))) in
+  Alcotest.check case "Coup valide" (Some (Noir, Dame)) p2.echiquier.${3, 4};
+  let p1, infos = jouer (p2, infos) (Placement (Pion, (4, 2))) in
   Alcotest.check case "Placement valide" (Some (Blanc, Pion)) p1.echiquier.${4, 2};
-  let p2,_ = jouer (p1,infos) (Placement (Pion, (4, 4))) in
+  let p2, _ = jouer (p1, infos) (Placement (Pion, (4, 4))) in
   Alcotest.check case "Placement valide" (Some (Blanc, Pion)) p2.echiquier.${4, 2}
 
-
 let jouer = [
-  "Placement", `Quick,test_placement;
-  "Petit roque", `Quick,test_petit_roque;
-  "Grand roque", `Quick,test_grand_roque;
-
+  "Placement", `Quick, test_placement;
+  "Petit roque", `Quick, test_petit_roque;
+  "Grand roque", `Quick, test_grand_roque;
 ]
 
 
-
 (* Fin de partie*)
-
 let gain_blanc () =
   test_perdu (init_pos "rnb1k1nr/pppp1ppp/8/1b2p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -") false;
   test_perdu (init_pos "rnb1k1nr/pppp1ppp/8/2b1p3/4P3/2N2N2/PPPP1qPP/R1BQKB1R w KQkq -") true;
@@ -141,12 +127,12 @@ let egalite () =
   test_egalite "2k4R/8/2K5/8/8/8/8/8 b - -" false;
   test_egalite "8/8/p2k2n1/Pp6/1P1K4/6r1/8/8 w - -" false
 
-
 let fin = [
   "Gain blanc", `Quick, gain_blanc;
   "Gain noir", `Quick, gain_noirs;
   "egalite", `Quick, egalite;
 ]
+
 
 let () = Alcotest.run "Regles Crazyhouse" [
   "String info", string_info;

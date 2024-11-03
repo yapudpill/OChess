@@ -5,7 +5,8 @@ open Jeu.Echiquier
 let piece_of_char c =
   let up = Char.uppercase_ascii c in
   let couleur = if up = c then Blanc else Noir in
-  let ptype = match up with
+  let ptype =
+    match up with
     | 'R' -> Tour
     | 'N' -> Cavalier
     | 'B' -> Fou
@@ -22,16 +23,15 @@ let rec from_fen_aux fen echiquier x y k =
   else
     match fen.[k] with
     (* Sauter à la rangée suivante *)
-    | '/' ->
-      from_fen_aux fen echiquier 0 (y - 1) (k + 1)
+    | '/' -> from_fen_aux fen echiquier 0 (y - 1) (k + 1)
     (* Sauter des cases vides *)
     | '0' .. '9' as c ->
-      let avance = int_of_char c - int_of_char '0' in
-      from_fen_aux fen echiquier (x + avance) y (k + 1)
+        let avance = int_of_char c - int_of_char '0' in
+        from_fen_aux fen echiquier (x + avance) y (k + 1)
     (* Placer la pièce et passer à la case suivante *)
     | c ->
-      echiquier.${x, y} <- piece_of_char c;
-      from_fen_aux fen echiquier (x + 1) y (k + 1)
+        echiquier.${x, y} <- piece_of_char c;
+        from_fen_aux fen echiquier (x + 1) y (k + 1)
 
 (* Fonction principale from_fen *)
 let from_fen fen =
@@ -41,21 +41,22 @@ let from_fen fen =
 let rec trouver_rois echiquier x y roi_blanc roi_noir =
   if x = 8 then (roi_blanc, roi_noir)
   else if y = 8 then trouver_rois echiquier (x + 1) 0 roi_blanc roi_noir
-  else match echiquier.${x, y} with
-  | Some (Blanc, Roi) -> trouver_rois echiquier x (y + 1) (x, y) roi_noir
-  | Some (Noir, Roi) -> trouver_rois echiquier x (y + 1) roi_blanc (x, y)
-  | _ -> trouver_rois echiquier x (y + 1) roi_blanc roi_noir
+  else
+    match echiquier.${x, y} with
+    | Some (Blanc, Roi) -> trouver_rois echiquier x (y + 1) (x, y) roi_noir
+    | Some (Noir, Roi) -> trouver_rois echiquier x (y + 1) roi_blanc (x, y)
+    | _ -> trouver_rois echiquier x (y + 1) roi_blanc roi_noir
 
 (* Fonction pour convertir les droits de roque depuis le FEN *)
 let roque_of_fen roque_str =
-  let roque_blanc = (String.contains roque_str 'Q', String.contains roque_str 'K') in
-  let roque_noir = (String.contains roque_str 'q', String.contains roque_str 'k') in
-  (roque_blanc, roque_noir)
+  let roque_blanc = String.contains roque_str 'Q', String.contains roque_str 'K' in
+  let roque_noir  = String.contains roque_str 'q', String.contains roque_str 'k' in
+  roque_blanc, roque_noir
 
-let prise_en_passant pep_string =
-  match pep_string with
-  | "-" -> None
-  | _ -> Some (int_of_char (Char.lowercase_ascii pep_string.[0]) - 97,int_of_char pep_string.[1] - 49)
+let prise_en_passant = function
+| "-" -> None
+| s ->
+    Some (int_of_char (Char.lowercase_ascii s.[0]) - 97, int_of_char s.[1] - 49)
 
 (* Fonction principale pour créer une partie à partir d'une FEN *)
 let creer_partie_fen fen =
@@ -68,10 +69,10 @@ let creer_partie_fen fen =
   else
     Jeu.Partie.{
       echiquier;
-      trait = if List.nth parts 1 = "w" then Blanc else Noir;
+      trait = (if List.nth parts 1 = "w" then Blanc else Noir);
       roi_blanc;
       roi_noir;
       roque_blanc;
       roque_noir;
-      en_passant = prise_en_passant @@ List.nth parts 3
+      en_passant = prise_en_passant @@ List.nth parts 3;
     }

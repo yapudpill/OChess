@@ -7,13 +7,16 @@ open TestUtil
 [test_piece p x y l] vérifie que les mouvements possibles de la piece [p] en
 partant de [(x, y)] sont bien [l]. *)
 let test_piece p x y l =
-  Alcotest.check mouv_list (Printf.sprintf "%s depuis (%d, %d)" (string_of_piece p) x y)
-    l (mouvement p (x, y))
+  Alcotest.check mouv_list
+    (Printf.sprintf "%s depuis (%d, %d)" (string_of_piece p) x y)
+    l
+    (mouvement p (x, y))
 
 let test_piece_dir p x y l =
-  Alcotest.check mouv_list_list (Printf.sprintf "%s depuis (%d, %d)" (string_of_piece p) x y)
-    l (mouvement_dir p (x, y))
-
+  Alcotest.check mouv_list_list
+    (Printf.sprintf "%s depuis (%d, %d)" (string_of_piece p) x y)
+    l
+    (mouvement_dir p (x, y))
 
 (*** Pion depuis toutes les cases possibles ***)
 let pion_blanc_normal () =
@@ -68,7 +71,7 @@ let test_pion = [
   "Noir départ",  `Quick, pion_noir_depart;
   "Noir normal",  `Quick, pion_noir_normal;
   "Noir fond",    `Quick, pion_noir_fond;
-  "Dirigé",       `Quick, pion_dir
+  "Dirigé",       `Quick, pion_dir;
 ]
 
 
@@ -115,7 +118,7 @@ let cavalier_dir () =
 let test_cavalier = [
   "Normal", `Quick, cavalier_normal;
   "Côté",   `Quick, cavalier_cote;
-  "Dirigé", `Quick, cavalier_dir
+  "Dirigé", `Quick, cavalier_dir;
 ]
 
 
@@ -139,7 +142,7 @@ let fou_pas_dir () =
 
 let test_fou = [
   "Dirigé",     `Quick, fou_dir;
-  "Non dirigé", `Quick, fou_pas_dir
+  "Non dirigé", `Quick, fou_pas_dir;
 ]
 
 
@@ -166,7 +169,7 @@ let tour_pas_dir () =
 
 let test_tour = [
   "Dirigé",     `Quick, tour_dir;
-  "Non dirigé", `Quick, tour_pas_dir
+  "Non dirigé", `Quick, tour_pas_dir;
 ]
 
 
@@ -189,7 +192,7 @@ let dame_pas_dir () =
 
 let test_dame = [
   "Dirigé",     `Quick, dame_dir;
-  "Non dirigé", `Quick, dame_pas_dir
+  "Non dirigé", `Quick, dame_pas_dir;
 ]
 
 (*** Inverse ***)

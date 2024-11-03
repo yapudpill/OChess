@@ -5,3 +5,4 @@ break-cases = toplevel
 function-indent = 0
 module-item-spacing = preserve
 type-decl-indent = 0
+parens-tuple = multi-line-only
