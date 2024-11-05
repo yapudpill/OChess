@@ -165,6 +165,15 @@ let case_depart_pion partie (x, y) =
         else []
 
 let coup_of_algebrique (partie, _) = function
+| EntreeSortie.Algebrique.Ambigu (lig,col,p,arr) ->
+  let potentiels = match p with
+  | Pion -> case_depart_pion partie arr
+  | _ -> case_depart_autre partie p arr
+  in
+  let dep = if lig <> -1 then List.nth (List.filter (fun (_,y) -> y = lig ) potentiels) 0
+    else List.nth (List.filter (fun (x,_) -> x = (Char.code (Char.lowercase_ascii (col.[0])) -97) ) potentiels) 0
+  in Ok (Mouvement (dep,arr))
+
 | EntreeSortie.Algebrique.Placement _ -> Error Invalide
 | EntreeSortie.Algebrique.Grand_Roque ->
     if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
@@ -185,6 +194,7 @@ let coup_of_algebrique (partie, _) = function
     | [] -> Error Invalide
     | [ dep ] -> Ok (Mouvement (dep, arr))
     | _ -> Error (Ambigu deps)
+
 
 
 (*** Jouer un coup ***)
