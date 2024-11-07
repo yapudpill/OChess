@@ -36,7 +36,8 @@ let string_of_algebrique =
       Printf.sprintf "%s (%d, %d)" (string_of_ptype p) x y
   | Placement (p, (x, y)) ->
       Printf.sprintf "Placement %s (%d, %d)" (string_of_ptype p) x y
-  | Ambigu (lig,col,p,(x,y)) -> Printf.sprintf "Ambigu %s (%d, %s) vers (%d,%d)" (string_of_ptype p) lig col x y
+  | NonAmbigu ((x',y'), p, (x,y)) ->
+      Printf.sprintf "Ambigu %s (%d, %d) vers (%d,%d)" (string_of_ptype p) x' y' x y
 
 let string_of_coup =
   let open Jeu.Partie in

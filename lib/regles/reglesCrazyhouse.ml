@@ -78,36 +78,10 @@ let jouer (partie, infos) = function
 
 (*** Interprétation de la notation algébrique ***)
 let coup_of_algebrique (partie, infos) = function
-| EntreeSortie.Algebrique.Ambigu (lig,col,p,arr) ->
-  let potentiels = match p with
-  | Pion -> case_depart_pion partie arr
-  | _ -> case_depart_autre partie p arr
-  in
-  let dep = if lig <> -1 then List.nth (List.filter (fun (_,y) -> y = lig ) potentiels) 0
-    else List.nth (List.filter (fun (x,_) -> x = (Char.code (Char.lowercase_ascii (col.[0])) -97) ) potentiels) 0
-  in Ok (Mouvement (dep,arr))
 | EntreeSortie.Algebrique.Placement (p, arr) ->
     if peut_poser (partie, infos) p arr then Ok (Placement (p, arr))
     else Error Invalide
-| EntreeSortie.Algebrique.Grand_Roque ->
-    if peut_roquer partie (-1) then Ok Grand_Roque else Error Invalide
-| EntreeSortie.Algebrique.Petit_Roque ->
-    if peut_roquer partie 1 then Ok Petit_Roque else Error Invalide
-| EntreeSortie.Algebrique.Arrivee (p, arr) ->
-    let potentiels =
-      match p with
-      | Pion -> case_depart_pion partie arr
-      | _ -> case_depart_autre partie p arr
-    in
-    let deps =
-      List.filter
-        (fun dep -> not @@ echec (deplacer_piece partie dep arr))
-        potentiels
-    in
-    match deps with
-    | [] -> Error Invalide
-    | [ dep ] -> Ok (Mouvement (dep, arr))
-    | _ -> Error (Ambigu deps)
+| algebrique -> ReglesBasiques.coup_of_algebrique (partie, infos) algebrique
 
 let mat (partie, infos) =
   let roi = get_pos_roi partie partie.trait in
