@@ -25,7 +25,7 @@ let test_to_placement () =
 let test_to = [
   "Mouvement", `Quick, test_to_arrivee;
   "Roque",     `Quick, test_to_roque;
-  "Placement", `Quick, test_to_placement
+  "Placement", `Quick, test_to_placement;
 ]
 
 
@@ -53,18 +53,18 @@ let test_from_placement () =
   test_from_string "@h8"  (Some (Placement (Pion, (7, 7))))
 
 let test_from_invalide () =
-  test_from_string ""     None;
-  test_from_string "Ch10" None;
+  test_from_string ""      None;
+  test_from_string "Ch10"  None;
   test_from_string "@Ch10" None;
-  test_from_string "Fc9"  None;
-  test_from_string "Tk0"  None;
-  test_from_string "Gk0"  None
+  test_from_string "Fc9"   None;
+  test_from_string "Tk0"   None;
+  test_from_string "Gk0"   None
 
 let test_from = [
   "Mouvement", `Quick, test_from_arrivee;
   "Roque",     `Quick, test_from_roque;
   "Placement", `Quick, test_from_placement;
-  "Invalide",  `Quick, test_from_invalide
+  "Invalide",  `Quick, test_from_invalide;
 ]
 
 

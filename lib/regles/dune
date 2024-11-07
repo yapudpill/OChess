@@ -1,4 +1,5 @@
 (library
  (name regles)
  (libraries jeu entreeSortie)
- (instrumentation (backend bisect_ppx)))
+ (instrumentation
+  (backend bisect_ppx)))

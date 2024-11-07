@@ -8,12 +8,11 @@ let inverse = function
 | Blanc -> Noir
 | Noir -> Blanc
 
-
-(* Mouvements par défauts *)
-
 let sur_echiquier (x, y) = 0 <= x && x < 8 && 0 <= y && y < 8
 
 let singleton x = [x]
+
+(* Mouvements par défauts *)
 
 (* Roi *)
 let mouv_roi (x, y) = List.filter sur_echiquier [
@@ -37,13 +36,14 @@ let mouv_cav_dir pos = List.map singleton (mouv_cav pos)
 
 (* Pion *)
 let mouv_pion_dir c (x, y) =
-  let devant, diagonale = match c with
-  | Blanc ->
-    (if y = 1 then [ (x, y+1); (x, y+2) ] else if y < 7 then [ (x, y+1) ] else []),
-    List.filter sur_echiquier [ (x-1, y+1); (x+1, y+1) ]
-  | Noir  ->
-    (if y = 6 then [ (x, y-1); (x, y-2) ] else if y > 0 then [ (x, y-1) ] else []),
-    List.filter sur_echiquier [ (x-1, y-1); (x+1, y-1) ]
+  let devant, diagonale =
+    match c with
+    | Blanc ->
+        (if y = 1 then [ (x, y+1); (x, y+2) ] else if y < 7 then [ (x, y+1) ] else []),
+        List.filter sur_echiquier [ (x-1, y+1); (x+1, y+1) ]
+    | Noir  ->
+        (if y = 6 then [ (x, y-1); (x, y-2) ] else if y > 0 then [ (x, y-1) ] else []),
+        List.filter sur_echiquier [ (x-1, y-1); (x+1, y-1) ]
   in
   devant :: List.map singleton diagonale
 

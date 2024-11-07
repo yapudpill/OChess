@@ -2,7 +2,9 @@ open EntreeSortie
 
 let test_car_invalide () =
   Alcotest.check_raises "Caractère non valide" (Failure "Caractère non valide")
-    (fun () -> ignore @@ Fen.creer_partie_fen "rnbqkbnv/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq")
+    (fun () ->
+      ignore
+      @@ Fen.creer_partie_fen "rnbqkbnv/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq")
 
 let test_pas_roi () =
   Alcotest.check_raises "Pas roi blanc" (Failure "FEN invalide")
@@ -16,5 +18,5 @@ let test_fen = [
 ]
 
 let () = Alcotest.run "FEN" [
-  "FEN", test_fen
+  "FEN", test_fen;
 ]
