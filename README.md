@@ -98,22 +98,15 @@ Voici un exemple de partie avec la notation de coups :
    A  B  C  D  E  F  G  H
 ```
 
-#### Précisions sur les captures et échecs
-
-- **Capture** : On utilise `x` entre la pièce et la case d'arrivée (ex. `Cxf6`
-  pour un Cavalier qui capture en `f6`).
-- **Échec** : On ajoute `+` à la fin du coup (ex. `Dg5+` pour un échec avec la
-  Dame en `g5`).
-
 #### Gestion des ambiguïtés
 
 Certaines positions peuvent entraîner des ambiguïtés. Par exemple, après la
 séquence de coups ci-dessus, un coup comme `Fc6` serait ambigu car les pions `b`
-et `d` peuvent tous deux capturer en `c6`. Dans ce cas, le joueur doit spécifier
+et `d` peuvent tout deux capturer en `c6`. Dans ce cas, le joueur doit spécifier
 la pièce voulue.
 
-- **Pions** : Pour lever l’ambiguïté, précisez la colonne d’origine (ex. `dxc6`
-  pour le pion `d` capturant en `c6`).
+- **Pions** : Pour lever l’ambiguïté, précisez `P` et la colonne d’origine
+  (ex. `Pdc6` pour le pion `d` allant en `c6`).
 - **Autres pièces** : Si une case est atteignable par plusieurs pièces de même
   type, on ajoute la colonne ou la ligne d'origine après la pièce.
     - Exemple avec les Cavaliers : Si un Cavalier est en `f3` et un autre en
