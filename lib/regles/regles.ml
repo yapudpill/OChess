@@ -21,6 +21,8 @@ module type Sig = sig
     (Partie.coup, Partie.erreur) result
   val jouer : Jeu.Partie.t * infos -> Partie.coup -> Jeu.Partie.t * infos
 
+  val echec : Jeu.Partie.t -> bool
+
   val perdu : Jeu.Partie.t * infos -> bool
   val egalite : Jeu.Partie.t * infos -> bool
 end

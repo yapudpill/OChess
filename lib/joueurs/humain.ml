@@ -26,7 +26,10 @@ module Make (R : Regles.Sig) = struct
       | Some algebrique ->
           match R.coup_of_algebrique (partie, infos) algebrique with
           | Ok coup -> coup
-          | Error Invalide -> print_endline "Ce coup est illégal"; boucle ()
+          | Error Invalide ->
+              print_endline "Ce coup est illégal";
+              if R.echec partie then print_endline "Rappel: vous êtes en échec";
+              boucle ()
           | Error (Ambigu l) -> lever_ambiguite algebrique l
     in
     boucle ()

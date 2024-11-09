@@ -28,14 +28,19 @@ module J1 = (val Choix.choix "Veuillez sélectionner le joueur 1 :" joueurs) (R)
 module J2 = (val Choix.choix "Veuillez sélectionner le joueur 2 :" joueurs) (R)
 
 (*** Main ***)
-let rec boucle_principale ((partie, _) as etat) =
+let print_etat ((partie, _) as etat) =
+  print_echiquier ~couleur partie.echiquier;
+  Printf.printf "Trait : %s%s\n"
+    (string_of_couleur partie.trait)
+    (if R.echec partie then ", échec" else "");
+  Option.iter (Printf.printf "Infos : %s\n") (R.string_of_infos etat)
+
+let rec boucle_principale etat =
   (* Nettoie le terminal *)
   print_string "\027[H\027[3J\027[J";
 
   (* Affiche la partie pour le joueur blanc *)
-  print_echiquier ~couleur partie.echiquier;
-  Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
-  Option.iter (Printf.printf "Infos : %s\n") (R.string_of_infos etat);
+  print_etat etat;
 
   let coup = J1.obtenir_coup etat in
   let (partie, _) as etat = R.jouer etat coup in
@@ -44,10 +49,7 @@ let rec boucle_principale ((partie, _) as etat) =
   else if R.perdu etat then (partie, Some Jeu.Piece.Blanc)
   else (
     (* Affiche la partie pour le joueur noir *)
-    print_newline ();
-    print_echiquier ~couleur partie.echiquier;
-    Printf.printf "Trait : %s\n" (string_of_couleur partie.trait);
-    Option.iter (Printf.printf "Infos : %s\n") (R.string_of_infos etat);
+    print_etat etat;
 
     let coup = J2.obtenir_coup etat in
     let (partie, _) as etat = R.jouer etat coup in
