@@ -14,15 +14,11 @@
 
 - Issue #22 Concernant l'affichage du trait
 - Issue #23 Concernant la saisie des coups
-
+- Merge request !9 concernant l'affichage du joueur actuel
 
 ## [Shogi](https://moule.informatique.univ-paris-diderot.fr/dufosse/projet-shogi)
 
 - Issue #42 Concernant la saisie des coups
-
-## [Shogi](https://moule.informatique.univ-paris-diderot.fr/nguyeval/projetocaml)
-
-- Issue #12 concernant les pseudos
 
 ## [Hex](https://moule.informatique.univ-paris-diderot.fr/nguyeval/projetocaml)
 
