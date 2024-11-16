@@ -23,6 +23,11 @@ eval $(opam env)
 Une fois les dépendances installées, le jeu peut être compilé avec `dune build`
 et exécuté avec `dune exec -- ochess`.
 
+Un [FEN](https://fr.wikipedia.org/wiki/Notation_Forsyth-Edwards) (une notation
+compressée de l'état d'une partie) peut également être précisée en argument de
+la ligne de commande pour charger une partie arbitraire. Ça donne par exemple
+`dune exec -- ochess "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R w - -"`
+
 **Note concernant les couleurs :** Nous avons remarqué que certains terminaux
 (notamment celui intégré dans vscode) ne respectent pas les séquences
 d'échappement ANSI utilisées pour afficher les couleurs. Par soucis de

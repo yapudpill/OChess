@@ -2,14 +2,18 @@ open EntreeSortie
 open EntreeSortie.Affichage
 open Jeu.Partie
 
-(*** Activation des couleurs ***)
-let couleur =
-  let tmp = ref true in
-  let args = [ "--no-colors", Arg.Clear tmp, "Désactive la coloration" ] in
-  let doc = "ochess [--no-colors]" in
-  let anon s = raise (Arg.Bad (Printf.sprintf "Option inconnue : %s" s)) in
+(*** Parsing de la ligne de commande ***)
+let couleur, fen =
+  let couleur = ref true in
+  let fen = ref None in
+  let args = [ "--no-colors", Arg.Clear couleur, "Désactive la coloration" ] in
+  let doc = "ochess [--no-colors] [\"FEN\"]" in
+  let anon s =
+    if !fen = None then fen := Some s
+    else raise (Arg.Bad "Trop d'arguments")
+  in
   Arg.parse args anon doc;
-  !tmp
+  !couleur, !fen
 
 (*** Sélection des règles et joueurs ***)
 let regles : (string * (module Regles.Sig)) list = [
@@ -64,7 +68,12 @@ let rec boucle_principale etat =
 
       boucle_principale etat))
 
-let partie, gagnant = boucle_principale (R.init_partie ())
+let partie, gagnant =
+  let etat = match fen with
+  | None -> R.init_partie ()
+  | Some fen -> R.init_pos fen
+  in
+  boucle_principale etat
 
 let () =
   print_newline ();
