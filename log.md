@@ -15,11 +15,13 @@
 
 - Issue #22 Concernant l'affichage du trait
 - Issue #23 Concernant la saisie des coups
+- Issue #24 Proposition FEN
 - Merge request !9 concernant l'affichage du joueur actuel
 
 ## [Shogi](https://moule.informatique.univ-paris-diderot.fr/dufosse/projet-shogi)
 
 - Issue #42 Concernant la saisie des coups
+- Issue #43 Proposition FEN
 
 ## [Hex](https://moule.informatique.univ-paris-diderot.fr/nguyeval/projetocaml)
 
