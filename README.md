@@ -5,26 +5,36 @@
 [![pipeline status](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/pipeline.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
 [![coverage report](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/badges/master/coverage.svg)](https://moule.informatique.univ-paris-diderot.fr/marc-anthony-ocaml/ochess/-/commits/master)
 
-## Compilation et exécution
+## Installation
+
+### Installation manuelle
+
+Si vous ne souhaitez pas suive les instructions d'installation qui vont suivre,
+voici la liste des dépendances de notre projet :
+- `dune`
+- `alcotest` (tests)
+- `bisect_ppx` (tests)
+
+### Compilation et exécution (sans tests)
 
 Ce jeu nécessite le package manager d'ocaml, [opam](https://opam.ocaml.org).
 
 Une fois opam installé, utilisez les commandes suivantes dans le répertoire où
-se trouve de README :
+se trouve de README pour installer les dépendances nécessaires à l'execution :
 
 ```bash
-# Créé un switch opam local avec les dépendances du projet
-opam switch create --deps-only --with-test --with-doc . 5.2.0
+# Créé un switch opam local avec les dépendances du projet hors tests
+opam switch create . 5.2.0 --deps-only
 
 # Mettre à jour les variables de l'environnement pour utiliser le switch local
 eval $(opam env)
 ```
 
-Une fois les dépendances installées, le jeu peut être compilé avec `dune build`
-et exécuté avec `dune exec -- ochess`.
+Une fois les dépendances installées, le jeu peut être compilé avec
+`dune build bin/main.exe` et exécuté avec `dune exec -- ochess`.
 
 Un [FEN](https://fr.wikipedia.org/wiki/Notation_Forsyth-Edwards) (une notation
-compressée de l'état d'une partie) peut également être précisée en argument de
+compressée de l'état d'une partie) peut également être précisé en argument de
 la ligne de commande pour charger une partie arbitraire. Ça donne par exemple
 `dune exec -- ochess "r1bqk2r/pppp1ppp/2n2n2/2b1p3/2BPP3/2P2N2/PP3PPP/RNBQK2R w - -"`
 
@@ -34,11 +44,19 @@ d'échappement ANSI utilisées pour afficher les couleurs. Par soucis de
 compatibilité, les couleurs peuvent être désactivées avec l'option `--no-colors`,
 donnant donc `dune exec -- ochess --no-colors`.
 
-## Tests et couverture
+### Tests et couverture
 
-Ce projet utilise Alcotest pour gérer les tests unitaires et bisect_ppx pour
+Ce projet utilise `alcotest` pour gérer les tests unitaires et `bisect_ppx` pour
 générer les rapports de couverture.
 
+Utilisez la commandes suivantes pour ajouter les dépendances de tests au switch
+local :
+
+```bash
+opam install . --deps-only --with-test
+```
+
+Le projet et les tests peuvent maintenant être compilés avec `dune build`.
 Les tests simples peuvent être exécutés avec `dune test`.
 
 Afin de générer un rapport de couverture, utilisez les commandes suivantes :
