@@ -1,3 +1,4 @@
+(** Types de base pour la représentation d'un échiquier. *)
 type case = Piece.t option
 type t = case array array
 

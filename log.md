@@ -3,6 +3,7 @@
 ## Notre projet
 
 - Résolution issue #18 à propos des coups ambigus
+- Résolution issue #17 affichage de l'échec
 
 ## [Abalone](https://moule.informatique.univ-paris-diderot.fr/cisses/abalone)
 
