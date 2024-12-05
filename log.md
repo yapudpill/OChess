@@ -10,13 +10,13 @@
 - Merge request !7 concernant l'orthographe
 - Issue #21 concernant l'utilisations d’exceptions dans le code
 
-## [Shogi](https://moule.informatique.univ-paris-diderot.fr/mangeant/ppf5-verriere-msc)
+## [Shogi 1](https://moule.informatique.univ-paris-diderot.fr/mangeant/ppf5-verriere-msc)
 
 - Issue #22 Concernant l'affichage du trait
 - Issue #23 Concernant la saisie des coups
 - Merge request !9 concernant l'affichage du joueur actuel
 
-## [Shogi](https://moule.informatique.univ-paris-diderot.fr/dufosse/projet-shogi)
+## [Shogi 2](https://moule.informatique.univ-paris-diderot.fr/dufosse/projet-shogi)
 
 - Issue #42 Concernant la saisie des coups
 
@@ -29,3 +29,7 @@
 ## [sdgo](https://moule.informatique.univ-paris-diderot.fr/dass/szpunar-das-go)
 
 - Issue #27 Lisibilité terminal
+
+## [DotsAndBoxes](https://moule.informatique.univ-paris-diderot.fr/salmona/dotsandboxes)
+
+- Merge request !4, meilleure copie des maps et nettoyage
