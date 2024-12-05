@@ -3,6 +3,7 @@
 ## Notre projet
 
 - Résolution issue #18 à propos des coups ambigus
+- Résolution issue #17 affichage de l'échec
 
 ## [Abalone](https://moule.informatique.univ-paris-diderot.fr/cisses/abalone)
 
@@ -14,11 +15,13 @@
 
 - Issue #22 Concernant l'affichage du trait
 - Issue #23 Concernant la saisie des coups
+- Issue #24 Proposition FEN
 - Merge request !9 concernant l'affichage du joueur actuel
 
 ## [Shogi 2](https://moule.informatique.univ-paris-diderot.fr/dufosse/projet-shogi)
 
 - Issue #42 Concernant la saisie des coups
+- Issue #43 Proposition FEN
 
 ## [Hex](https://moule.informatique.univ-paris-diderot.fr/nguyeval/projetocaml)
 
